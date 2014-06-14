@@ -1,12 +1,16 @@
-/* FullGallery v0.1
+/* FullGallery v0.2
  * 
  * Responsive Gallery
  * 
  * Changelog
+ * v0.2 (14/06/2014)
+ * + Fixed multiple gallery problem
+ * + Fixed animation problem
+ * 
  * v0.1 (13/06/2014)
  * + Initial release
  * 
- * License: Licenza Creative Commons - Creative Commons Attribution - Share alike 4.0 International (http://creativecommons.org/licenses/by-sa/4.0/)
+ * License: GNU AFFERO (https://github.com/digitaldag/FullGallery/blob/master/LICENSE)
  * Url: http://www.big-d-web.com (Daigor Landi)
  */
 (function($) {
