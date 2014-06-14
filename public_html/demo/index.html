@@ -1,0 +1,27 @@
+<html>
+    <head>
+        <title>FullGallery</title>
+        <link href="css/style.css" media="all" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+        <div id='gallery' style='height:100%; width:100%; position:absolute;overflow:hidden;z-index:-3'></div>
+        <script src="js/libs/jquery/jquery.min.js" />
+        <script src="js/libs/jquery-easing/jquery.easing.min.js" />
+        <script src="js/libs/fullgallery/FullGallery.js" />
+        <script>
+            $(document).ready(function() {
+                $('#gallery').FullGallery({images: [
+                        {url: 'http://www.artspecialday.com/wp-content/uploads/2013/06/www.enricoguala.it_.jpg'},
+                        {url: 'http://navigareinsieme.telecomitalia.it/wp-content/uploads/2012/09/LAND192.jpg'},
+                        {url: 'http://3.bp.blogspot.com/-j4nfyUUfZIc/UWvdIB8EouI/AAAAAAAABPc/e5AJ3P9-SQg/s1600/sailing_boat_at_sunset.jpg'},
+                        {url: 'http://killbillx.files.wordpress.com/2013/11/lidialorella-crisobonzi-viaggio-usa.jpg'},
+                        {url: 'http://aforismi.meglio.it/img/frasi/viaggio.jpg'}
+                    ],
+                    time: 5000,
+                    autoplay: false,
+                    animation: 'fade',
+                    mini: 'thumbinal'});
+            });
+        </script>
+    </body>
+</html>
