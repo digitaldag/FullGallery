@@ -223,7 +223,7 @@
 
                 switch (options[id].mini)
                 {
-                        case 'thumbinal':
+                        case 'thumbnails':
                                 thumbs_class = 'FG_thumb_list';
                                 break;
                         default:
