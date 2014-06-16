@@ -5,6 +5,8 @@
  * Changelog
  * v0.3 (16/06/2014)
  * + Fixed var mistake
+ * + Added callback functions
+ * + Added difference between animation forward and previous
  * 
  * v0.2 (14/06/2014)
  * + Fixed multiple gallery problem
@@ -34,44 +36,86 @@
                         autoplay: false,
                         mini: null
                 }];
+
         var debug = false;
         var to = null;
-        
+
         var _actual = new Array();
         var _prev = new Array();
         var _next = new Array();
         var _baseId = new Array();
-                        
+
         var animations = {
                 fade: {
-                        before: {
-                                actual: {zIndex: -2, display: 'block', opacity: '1.0'},
-                                next: {zIndex: -1, display: 'block', opacity: '0.0'}
+                        forward: {
+                                before: {
+                                        actual: {zIndex: -2, display: 'block', opacity: '1.0'},
+                                        next: {zIndex: -1, display: 'block', opacity: '0.0'}
+                                },
+                                actualImageTo: null,
+                                nextImageTo: {display: 'block', opacity: '1.0'},
+                                after: {
+                                        actual: {zIndex: -3, display: 'none', opacity: '0.0'},
+                                        next: {zIndex: -1, display: 'block'}
+                                }
                         },
-                        actualImageTo: null,
-                        nextImageTo: {display: 'block', opacity: '1.0'},
-                        after: {
-                                actual: {zIndex: -3, display: 'none', opacity: '0.0'},
-                                next: {zIndex: -1, display: 'block'}
+                        previous: {
+                                before: {
+                                        actual: {zIndex: -2, display: 'block', opacity: '1.0'},
+                                        next: {zIndex: -1, display: 'block', opacity: '0.0'}
+                                },
+                                actualImageTo: null,
+                                nextImageTo: {display: 'block', opacity: '1.0'},
+                                after: {
+                                        actual: {zIndex: -3, display: 'none', opacity: '0.0'},
+                                        next: {zIndex: -1, display: 'block'}
+                                }
                         },
                         sync: false,
                         time: 1500,
-                        method: 'linear'
+                        method: 'linear',
+                        callbacks: {
+                                before: function() {
+                                },
+                                after: function() {
+                                }
+                        }
                 },
                 slide: {
-                        before: {
-                                actual: {zIndex: 1, display: 'block', top: 0, left: 0},
-                                next: {zIndex: 1, display: 'block', top: 0, left: '-100%'}
+                        forward: {
+                                before: {
+                                        actual: {zIndex: 1, display: 'block', top: 0, left: 0},
+                                        next: {zIndex: 1, display: 'block', top: 0, left: '100%'}
+                                },
+                                actualImageTo: {left: '-100%'},
+                                nextImageTo: {left: '0'},
+                                after: {
+                                        actual: {zIndex: 1, display: 'block', top: 0, left: '100%'},
+                                        next: {zIndex: 1, display: 'block', top: 0, left: 0}
+                                }
                         },
-                        actualImageTo: {left: '100%'},
-                        nextImageTo: {left: '0'},
-                        after: {
-                                actual: {zIndex: 1, display: 'block', top: 0, left: '-100%'},
-                                next: {zIndex: 1, display: 'block', top: 0, left: 0}
+                        previous: {
+                                before: {
+                                        actual: {zIndex: 1, display: 'block', top: 0, left: 0},
+                                        next: {zIndex: 1, display: 'block', top: 0, left: '-100%'}
+                                },
+                                actualImageTo: {left: '100%'},
+                                nextImageTo: {left: '0'},
+                                after: {
+                                        actual: {zIndex: 1, display: 'block', top: 0, left: '-100%'},
+                                        next: {zIndex: 1, display: 'block', top: 0, left: 0}
+                                }
+                                
                         },
                         sync: true,
                         time: 1500,
-                        method: 'easeInOutExpo'
+                        method: 'easeInOutExpo',
+                        callbacks: {
+                                before: function() {
+                                },
+                                after: function() {
+                                }
+                        }
                 }
         }
 
@@ -122,10 +166,10 @@
                         if (options[id].images[callback] != undefined && callback != options[id].actual)
                         {
                                 options[id].actual = options[id].actual;
-                                options[id].prev = (callback - 1 < 0) ? options[id].images.length : callback;
+                                options[id].prev = (callback < 0) ? options[id].total : callback;
                                 options[id].next = callback;
-                                effect = (options[id].next > options[id].actual)?'n':'p';
-                                animation(id, 'n', true);
+                                effect = (options[id].next > options[id].actual) ? 'n' : 'p';
+                                animation(id,effect, true);
                         }
                 }
 
@@ -191,9 +235,11 @@
                 {
                         z = -3;
                         d = 'none';
-                        if (i == options[id].images.length - 1)
+                        if (i == 0){
                                 z = -1;
-                        d = 'block';
+                                d = 'block';
+                        }
+                        
                         $(options[id].base).append('<div class="FG_image" image="' + i + '" style="z-index:' + z + ';background-image:url(' + options[id].images[i].url + ');display:' + d + ';">' + ((options[id].images[i].content == undefined) ? '' : options[id].images[i].content) + '</div>');
 
                         if (options[id].mini != null)
@@ -212,20 +258,24 @@
                 thumbs += '</ul>';
 
                 $(options[id].base).prepend(thumbs);
-                $(_baseId[id] + ' > ul > li,'+_baseId[id] + '  > ul > li').click(function() {
+                $(_baseId[id] + ' > ul > li,' + _baseId[id] + '  > ul > li').click(function() {
                         if (!$(_baseId[id] + '.FG_image').is(':animated'))
                         {
-                                console.log($(this).attr('image'));
                                 $(_baseId[id] + ' > ul > li').removeClass('FG_thumb_list_actual');
-                                $(options[id].base).FullGallery($(this).attr('image') * 1);
+                                
+                                img = $(this).attr('image') * 1;
+                                img = (img >= options[id].images.length)?0:img;
+                                img = (img < 0)?options[id].images.length-1:img;
+                                
+                                $(options[id].base).FullGallery(img);
                                 $(this).addClass('FG_thumb_list_actual');
                         }
                 });
 
-                options[id].actual = i - 1;
-                options[id].total = i - 1;
-                options[id].prev = i - 2;
-                options[id].next = 0;
+                options[id].actual = 0;
+                options[id].total = i-1;
+                options[id].prev = i-1;
+                options[id].next = 1;
                 log(options[id]);
                 if (options[id].autoplay)
                         setTimeout(function() {
@@ -255,24 +305,26 @@
 
         var animation = function(id, PoN, s) {
 
-                var sA = animations[options[id].animation];
-                
-                
-                
-                s = (s == true) ? false : true;
+                switch(PoN)
+                {
+                        case 'p':
+                                effect = 'previous'; break;
+                        default:
+                                effect = 'forward'; break;
+                }
 
-                //if (s)
-                //{
-                        _actual[id] = options[id].actual;
-                        _prev[id] = options[id].prev;
-                        _next[id] = options[id].next;
-                //}
+                var sA = animations[options[id].animation][effect];
+                var sAc = animations[options[id].animation];
+
+                _actual[id] = options[id].actual;
+                _prev[id] = options[id].prev;
+                _next[id] = options[id].next;
 
                 if (PoN == 'p')
                 {
                         options[id].actual = options[id].prev;
-                        options[id].prev = (options[id].actual - 1 < 0) ? options[id].total : options[id].actual - 1;
-                        options[id].next = (options[id].actual + 1 > options[id].total) ? 0 : options[id].actual + 1;
+                        options[id].next = (options[id].actual - 1 < 0) ? options[id].total : options[id].actual - 1;
+                        options[id].prev = (options[id].actual + 1 > options[id].total) ? 0 : options[id].actual + 1;
                 }
                 else
                 {
@@ -284,10 +336,18 @@
                 if (sA.before.actual != null) {
                         $(options[id].base).children('div.FG_image[image="' + _actual[id] + '"]').css(sA.before.actual);
                         log('Before set actual');
+                        if (typeof sAc.callbacks.before == 'function')
+                        {
+                                sAc.callbacks.before('actual', _actual[id]);
+                        }
                 }
                 if (sA.before.next != null) {
                         $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').css(sA.before.next);
                         log('Before set next');
+                        if (typeof sAc.callbacks.before == 'function')
+                        {
+                                sAc.callbacks.before('next', _next[id]);
+                        }
                 }
 
                 if (sA.actualImageTo != null) {
@@ -300,8 +360,16 @@
                                         $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').animate(sA.nextImageTo, sA.time, sA.method, function() {
                                                 log('After set acutal');
                                                 $(options[id].base).children('div.FG_image[image="' + _actual[id] + '"]').css(sA.after.actual);
+                                                if (typeof sAc.callbacks.after == 'function')
+                                                {
+                                                        sAc.callbacks.after('actual', _actual[id]);
+                                                }
                                                 log('After set next');
                                                 $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').css(sA.after.next);
+                                                if (typeof sAc.callbacks.after == 'function')
+                                                {
+                                                        sAc.callbacks.after('next', _next[id]);
+                                                }
                                         });
                                         log('Next animation end');
                                 }
@@ -310,6 +378,10 @@
                                         log('Sync true');
                                         log('After set acutal');
                                         $(options[id].base).children('div.FG_image[image="' + _actual[id] + '"]').css(sA.after.actual);
+                                        if (typeof sAc.callbacks.after == 'function')
+                                        {
+                                                sAc.callbacks.after('actual', _actual[id]);
+                                        }
                                 }
                         });
                         log('Actual animation end');
@@ -324,10 +396,18 @@
                                 {
                                         log('After set acutal');
                                         $(options[id].base).children('div.FG_image[image="' + _actual[id] + '"]').css(sA.after.actual);
+                                        if (typeof sAc.callbacks.after == 'function')
+                                        {
+                                                sAc.callbacks.after('actual', _actual[id]);
+                                        }
                                 }
 
                                 log('After set next');
                                 $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').css(sA.after.next);
+                                if (typeof sAc.callbacks.after == 'function')
+                                {
+                                        sAc.callbacks.after('next', _next[id]);
+                                }
                         });
                         log('Next animation end');
 
