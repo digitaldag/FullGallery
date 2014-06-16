@@ -7,6 +7,8 @@
  * + Fixed var mistake
  * + Added callback functions
  * + Added difference between animation forward and previous
+ * + Added delay between actual and next image
+ * + Added actual/next image animation separate details
  * 
  * v0.2 (14/06/2014)
  * + Fixed multiple gallery problem
@@ -53,11 +55,12 @@
                                         next: {zIndex: -1, display: 'block', opacity: '0.0'}
                                 },
                                 actualImageTo: null,
-                                nextImageTo: {display: 'block', opacity: '1.0'},
+                                delay: 0,
+                                nextImageTo: {css:{display: 'block', opacity: '1.0'},time:1000,method:'linear'},
                                 after: {
                                         actual: {zIndex: -3, display: 'none', opacity: '0.0'},
                                         next: {zIndex: -1, display: 'block'}
-                                }
+                                },
                         },
                         previous: {
                                 before: {
@@ -65,15 +68,14 @@
                                         next: {zIndex: -1, display: 'block', opacity: '0.0'}
                                 },
                                 actualImageTo: null,
-                                nextImageTo: {display: 'block', opacity: '1.0'},
+                                delay: 0,
+                                nextImageTo: {css:{display: 'block', opacity: '1.0'},time:1000,method:'linear'},
                                 after: {
                                         actual: {zIndex: -3, display: 'none', opacity: '0.0'},
                                         next: {zIndex: -1, display: 'block'}
-                                }
+                                },
                         },
                         sync: false,
-                        time: 1500,
-                        method: 'linear',
                         callbacks: {
                                 before: function() {
                                 },
@@ -85,10 +87,11 @@
                         forward: {
                                 before: {
                                         actual: {zIndex: 1, display: 'block', top: 0, left: 0},
-                                        next: {zIndex: 1, display: 'block', top: 0, left: '100%'}
+                                        next: {zIndex: 2, display: 'block', top: 0, left: '100%'}
                                 },
-                                actualImageTo: {left: '-100%'},
-                                nextImageTo: {left: '0'},
+                                actualImageTo: {css:{left: '-100%'},time:1200,method: 'easeInOutExpo'},
+                                delay: 0,
+                                nextImageTo: {css:{left: '0'},time:1000,method: 'easeInOutExpo'},
                                 after: {
                                         actual: {zIndex: 1, display: 'block', top: 0, left: '100%'},
                                         next: {zIndex: 1, display: 'block', top: 0, left: 0}
@@ -97,19 +100,17 @@
                         previous: {
                                 before: {
                                         actual: {zIndex: 1, display: 'block', top: 0, left: 0},
-                                        next: {zIndex: 1, display: 'block', top: 0, left: '-100%'}
+                                        next: {zIndex: 2, display: 'block', top: 0, left: '-100%'}
                                 },
-                                actualImageTo: {left: '100%'},
-                                nextImageTo: {left: '0'},
+                                actualImageTo: {css:{left: '100%'},time:1200,method: 'easeInOutExpo'},
+                                delay: 0,
+                                nextImageTo: {css:{left: '0'},time:1000,method: 'easeInOutExpo'},
                                 after: {
                                         actual: {zIndex: 1, display: 'block', top: 0, left: '-100%'},
                                         next: {zIndex: 1, display: 'block', top: 0, left: 0}
-                                }
-                                
+                                },
                         },
                         sync: true,
-                        time: 1500,
-                        method: 'easeInOutExpo',
                         callbacks: {
                                 before: function() {
                                 },
@@ -169,7 +170,7 @@
                                 options[id].prev = (callback < 0) ? options[id].total : callback;
                                 options[id].next = callback;
                                 effect = (options[id].next > options[id].actual) ? 'n' : 'p';
-                                animation(id,effect, true);
+                                animation(id, effect, true);
                         }
                 }
 
@@ -235,18 +236,18 @@
                 {
                         z = -3;
                         d = 'none';
-                        if (i == 0){
+                        if (i == 0) {
                                 z = -1;
                                 d = 'block';
                         }
-                        
+
                         $(options[id].base).append('<div class="FG_image" image="' + i + '" style="z-index:' + z + ';background-image:url(' + options[id].images[i].url + ');display:' + d + ';">' + ((options[id].images[i].content == undefined) ? '' : options[id].images[i].content) + '</div>');
 
                         if (options[id].mini != null)
                         {
                                 switch (options[id].mini)
                                 {
-                                        case 'thumbinal':
+                                        case 'thumbnails':
                                                 thumbs += '<li class="FG_thumb_image" image="' + (i) + '" style="background-image:url(' + options[id].images[i].url + ');background-size:cover;background-position: center center;"></li>';
                                                 break;
                                         default:
@@ -262,19 +263,19 @@
                         if (!$(_baseId[id] + '.FG_image').is(':animated'))
                         {
                                 $(_baseId[id] + ' > ul > li').removeClass('FG_thumb_list_actual');
-                                
+
                                 img = $(this).attr('image') * 1;
-                                img = (img >= options[id].images.length)?0:img;
-                                img = (img < 0)?options[id].images.length-1:img;
-                                
+                                img = (img >= options[id].images.length) ? 0 : img;
+                                img = (img < 0) ? options[id].images.length - 1 : img;
+
                                 $(options[id].base).FullGallery(img);
                                 $(this).addClass('FG_thumb_list_actual');
                         }
                 });
 
                 options[id].actual = 0;
-                options[id].total = i-1;
-                options[id].prev = i-1;
+                options[id].total = i - 1;
+                options[id].prev = i - 1;
                 options[id].next = 1;
                 log(options[id]);
                 if (options[id].autoplay)
@@ -305,12 +306,14 @@
 
         var animation = function(id, PoN, s) {
 
-                switch(PoN)
+                switch (PoN)
                 {
                         case 'p':
-                                effect = 'previous'; break;
+                                effect = 'previous';
+                                break;
                         default:
-                                effect = 'forward'; break;
+                                effect = 'forward';
+                                break;
                 }
 
                 var sA = animations[options[id].animation][effect];
@@ -352,12 +355,12 @@
 
                 if (sA.actualImageTo != null) {
                         log('Actual animation start');
-                        $(options[id].base).children('div.FG_image[image="' + _actual[id] + '"]').animate(sA.actualImageTo, sA.time, sA.method, function() {
-                                if (!sA.sync && sA.nextImageTo != null)
+                        $(options[id].base).children('div.FG_image[image="' + _actual[id] + '"]').animate(sA.actualImageTo.css, sA.actualImageTo.time, sA.actualImageTo.method, function() {
+                                if (!sAc.sync && sA.nextImageTo != null)
                                 {
                                         log('Sync false');
                                         log('Next animation start');
-                                        $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').animate(sA.nextImageTo, sA.time, sA.method, function() {
+                                        $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').animate(sA.nextImageTo.css, sA.nextImageTo.time, sA.nextImageTo.method, function() {
                                                 log('After set acutal');
                                                 $(options[id].base).children('div.FG_image[image="' + _actual[id] + '"]').css(sA.after.actual);
                                                 if (typeof sAc.callbacks.after == 'function')
@@ -390,29 +393,58 @@
                 {
                         log('Sync false');
                         log('Next animation start');
-                        $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').animate(sA.nextImageTo, sA.time, sA.method, function() {
+                        if (sA.delay > 0)
+                        {
+                                $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').delay(sA.delay).animate(sA.nextImageTo.css, sA.nextImageTo.time, sA.nextImageTo.method, function() {
 
-                                if (!sA.sync)
-                                {
-                                        log('After set acutal');
-                                        $(options[id].base).children('div.FG_image[image="' + _actual[id] + '"]').css(sA.after.actual);
+                                        if (!sAc.sync)
+                                        {
+                                                log('After set acutal');
+                                                $(options[id].base).children('div.FG_image[image="' + _actual[id] + '"]').css(sA.after.actual);
+                                                if (typeof sAc.callbacks.after == 'function')
+                                                {
+                                                        sAc.callbacks.after('actual', _actual[id]);
+                                                }
+                                        }
+
+                                        log('After set next');
+                                        $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').css(sA.after.next);
                                         if (typeof sAc.callbacks.after == 'function')
                                         {
-                                                sAc.callbacks.after('actual', _actual[id]);
+                                                sAc.callbacks.after('next', _next[id]);
                                         }
-                                }
+                                });
+                                log('Next animation end');
 
-                                log('After set next');
-                                $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').css(sA.after.next);
-                                if (typeof sAc.callbacks.after == 'function')
-                                {
-                                        sAc.callbacks.after('next', _next[id]);
-                                }
-                        });
-                        log('Next animation end');
+                                $(options[id].base).children('div.FG_image').removeClass('actual');
+                                $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').addClass('actual');
+                        }
+                        else
+                        {
+                                $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').animate(sA.nextImageTo.css, sA.nextImageTo.time, sA.nextImageTo.method, function() {
 
-                        $(options[id].base).children('div.FG_image').removeClass('actual');
-                        $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').addClass('actual');
+                                        if (!sAc.sync)
+                                        {
+                                                log('After set acutal');
+                                                $(options[id].base).children('div.FG_image[image="' + _actual[id] + '"]').css(sA.after.actual);
+                                                if (typeof sAc.callbacks.after == 'function')
+                                                {
+                                                        sAc.callbacks.after('actual', _actual[id]);
+                                                }
+                                        }
+
+                                        log('After set next');
+                                        $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').css(sA.after.next);
+                                        if (typeof sAc.callbacks.after == 'function')
+                                        {
+                                                sAc.callbacks.after('next', _next[id]);
+                                        }
+                                });
+                                log('Next animation end');
+
+                                $(options[id].base).children('div.FG_image').removeClass('actual');
+                                $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').addClass('actual');
+                        }
                 }
 
                 if (options[id].status == 1) {
