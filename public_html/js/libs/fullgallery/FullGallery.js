@@ -13,7 +13,7 @@
  * v0.1 (13/06/2014)
  * + Initial release
  * 
- * License: CC 4.0 (By) http://creativecommons.org/licenses/by/4.0/
+ * License: This work is licensed under the Creative Commons Attribution 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/ or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
  * Contacts: digitald(at)big-d-web(dot)com
  */
 (function($) {
@@ -40,6 +40,7 @@
         var _actual = new Array();
         var _prev = new Array();
         var _next = new Array();
+        var _baseId = new Array();
                         
         var animations = {
                 fade: {
@@ -123,7 +124,7 @@
                                 options[id].actual = options[id].actual;
                                 options[id].prev = (callback - 1 < 0) ? options[id].images.length : callback;
                                 options[id].next = callback;
-
+                                effect = (options[id].next > options[id].actual)?'n':'p';
                                 animation(id, 'n', true);
                         }
                 }
@@ -161,8 +162,8 @@
 
         var init = function(id)
         {
-                _baseId = options[id].base;
-                _baseId = '#' + _baseId.attr('id') + ' ';
+                _baseId[id] = options[id].base;
+                _baseId[id] = '#' + _baseId[id].attr('id') + ' ';
                 if (options[id].images.length == 0)
                 {
                         elements = 0;
@@ -211,11 +212,11 @@
                 thumbs += '</ul>';
 
                 $(options[id].base).prepend(thumbs);
-                $(_baseId + ' > ul > li,'+_baseId + '  > ul > li').click(function() {
-                        if (!$(_baseId + '.FG_image').is(':animated'))
+                $(_baseId[id] + ' > ul > li,'+_baseId[id] + '  > ul > li').click(function() {
+                        if (!$(_baseId[id] + '.FG_image').is(':animated'))
                         {
                                 console.log($(this).attr('image'));
-                                $(_baseId + ' > ul > li').removeClass('FG_thumb_list_actual');
+                                $(_baseId[id] + ' > ul > li').removeClass('FG_thumb_list_actual');
                                 $(options[id].base).FullGallery($(this).attr('image') * 1);
                                 $(this).addClass('FG_thumb_list_actual');
                         }
