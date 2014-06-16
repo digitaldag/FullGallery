@@ -1,8 +1,11 @@
-/* FullGallery v0.2
+/* FullGallery v0.3
  * 
- * Responsive Gallery
+ * Responsive multi-Gallery with thumbinals, customizable transiction and content slideshow
  * 
  * Changelog
+ * v0.3 (16/06/2014)
+ * + Fixed var mistake
+ * 
  * v0.2 (14/06/2014)
  * + Fixed multiple gallery problem
  * + Fixed animation problem
@@ -10,8 +13,8 @@
  * v0.1 (13/06/2014)
  * + Initial release
  * 
- * License: GNU AFFERO (https://github.com/digitaldag/FullGallery/blob/master/LICENSE)
- * Url: http://www.big-d-web.com (Daigor Landi)
+ * License: CC 4.0 (By) http://creativecommons.org/licenses/by/4.0/
+ * Contacts: digitald(at)big-d-web(dot)com
  */
 (function($) {
         var content = [];
@@ -31,8 +34,13 @@
                         autoplay: false,
                         mini: null
                 }];
-        var debug = true;
+        var debug = false;
         var to = null;
+        
+        var _actual = new Array();
+        var _prev = new Array();
+        var _next = new Array();
+                        
         var animations = {
                 fade: {
                         before: {
@@ -167,7 +175,17 @@
                 }
                 $(options[id].base).empty();
 
-                thumbs = '<ul class="FG_thumb_list">';
+                switch (options[id].mini)
+                {
+                        case 'thumbinal':
+                                thumbs_class = 'FG_thumb_list';
+                                break;
+                        default:
+                                thumbs_class = 'FG_button_list';
+                                break;
+                }
+
+                thumbs = '<ul class="' + thumbs_class + '">';
                 for (i = 0; i < options[id].images.length; i++)
                 {
                         z = -3;
@@ -182,10 +200,10 @@
                                 switch (options[id].mini)
                                 {
                                         case 'thumbinal':
-                                                thumbs += '<li class="FG_thumb_button" image="' + i + '" style="background-image:url(' + options[id].images[i].url + ');background-size:cover;background-position: center center;"></li>';
+                                                thumbs += '<li class="FG_thumb_image" image="' + (i) + '" style="background-image:url(' + options[id].images[i].url + ');background-size:cover;background-position: center center;"></li>';
                                                 break;
                                         default:
-                                                thumbs += '<li class="FG_thumb_button" image="' + i + '"></li>';
+                                                thumbs += '<li class="FG_thumb_button" image="' + (i) + '"></li>';
                                                 break;
                                 }
                         }
@@ -193,10 +211,11 @@
                 thumbs += '</ul>';
 
                 $(options[id].base).prepend(thumbs);
-                $(_baseId + '.FG_thumb_list > li').click(function() {
+                $(_baseId + ' > ul > li,'+_baseId + '  > ul > li').click(function() {
                         if (!$(_baseId + '.FG_image').is(':animated'))
                         {
-                                $(_baseId + '.FG_thumb_list > li').removeClass('FG_thumb_list_actual');
+                                console.log($(this).attr('image'));
+                                $(_baseId + ' > ul > li').removeClass('FG_thumb_list_actual');
                                 $(options[id].base).FullGallery($(this).attr('image') * 1);
                                 $(this).addClass('FG_thumb_list_actual');
                         }
@@ -236,15 +255,17 @@
         var animation = function(id, PoN, s) {
 
                 var sA = animations[options[id].animation];
-                console.log(options[id].base);
+                
+                
+                
                 s = (s == true) ? false : true;
 
-                if (s)
-                {
-                        _actual = options[id].actual;
-                        _prev = options[id].prev;
-                        _next = options[id].next;
-                }
+                //if (s)
+                //{
+                        _actual[id] = options[id].actual;
+                        _prev[id] = options[id].prev;
+                        _next[id] = options[id].next;
+                //}
 
                 if (PoN == 'p')
                 {
@@ -260,26 +281,26 @@
                 }
 
                 if (sA.before.actual != null) {
-                        $(options[id].base).children('div.FG_image:eq(' + _actual + ')').css(sA.before.actual);
+                        $(options[id].base).children('div.FG_image[image="' + _actual[id] + '"]').css(sA.before.actual);
                         log('Before set actual');
                 }
                 if (sA.before.next != null) {
-                        $(options[id].base).children('div.FG_image:eq(' + _next + ')').css(sA.before.next);
+                        $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').css(sA.before.next);
                         log('Before set next');
                 }
 
                 if (sA.actualImageTo != null) {
                         log('Actual animation start');
-                        $(options[id].base).children('div.FG_image:eq(' + _actual + ')').animate(sA.actualImageTo, sA.time, sA.method, function() {
+                        $(options[id].base).children('div.FG_image[image="' + _actual[id] + '"]').animate(sA.actualImageTo, sA.time, sA.method, function() {
                                 if (!sA.sync && sA.nextImageTo != null)
                                 {
                                         log('Sync false');
                                         log('Next animation start');
-                                        $(options[id].base).children('div.FG_image:eq(' + _next + ')').animate(sA.nextImageTo, sA.time, sA.method, function() {
+                                        $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').animate(sA.nextImageTo, sA.time, sA.method, function() {
                                                 log('After set acutal');
-                                                $(options[id].base).children('div.FG_image:eq(' + _actual + ')').css(sA.after.actual);
+                                                $(options[id].base).children('div.FG_image[image="' + _actual[id] + '"]').css(sA.after.actual);
                                                 log('After set next');
-                                                $(options[id].base).children('div.FG_image:eq(' + _next + ')').css(sA.after.next);
+                                                $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').css(sA.after.next);
                                         });
                                         log('Next animation end');
                                 }
@@ -287,7 +308,7 @@
                                 {
                                         log('Sync true');
                                         log('After set acutal');
-                                        $(options[id].base).children('div.FG_image:eq(' + _actual + ')').css(sA.after.actual);
+                                        $(options[id].base).children('div.FG_image[image="' + _actual[id] + '"]').css(sA.after.actual);
                                 }
                         });
                         log('Actual animation end');
@@ -296,21 +317,21 @@
                 {
                         log('Sync false');
                         log('Next animation start');
-                        $(options[id].base).children('div.FG_image:eq(' + _next + ')').animate(sA.nextImageTo, sA.time, sA.method, function() {
+                        $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').animate(sA.nextImageTo, sA.time, sA.method, function() {
 
                                 if (!sA.sync)
                                 {
                                         log('After set acutal');
-                                        $(options[id].base).children('div.FG_image:eq(' + _actual + ')').css(sA.after.actual);
+                                        $(options[id].base).children('div.FG_image[image="' + _actual[id] + '"]').css(sA.after.actual);
                                 }
 
                                 log('After set next');
-                                $(options[id].base).children('div.FG_image:eq(' + _next + ')').css(sA.after.next);
+                                $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').css(sA.after.next);
                         });
                         log('Next animation end');
 
                         $(options[id].base).children('div.FG_image').removeClass('actual');
-                        $(options[id].base).children('div.FG_image:eq(' + _next + ')').addClass('actual');
+                        $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').addClass('actual');
                 }
 
                 if (options[id].status == 1) {

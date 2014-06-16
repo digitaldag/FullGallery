@@ -3,9 +3,9 @@ html,body{height:100%; width:100%;margin:0;padding:0;}
 .background{
     height:100%; 
     width:100%; 
-    position:absolute;
+    position:fixed;
     overflow:hidden;
-    z-index:-3
+    z-index:-3;
 }
 
 .fixed{
@@ -31,12 +31,19 @@ html,body{height:100%; width:100%;margin:0;padding:0;}
     margin-right: 10%;
     background-color: #fff;
     opacity: 0.8;
+    position: relative;
 }
 
 #gallery2{
-    width:50%;
-    height: 100px;
+    width:calc(100% - 10px);
+    height: calc(100% - 10px);
     float:left;
     overflow: hidden;
     position: relative;
+    margin:5px;
+    z-index: 2;
+}
+
+#gallery2 li{
+        z-index: 10;
 }

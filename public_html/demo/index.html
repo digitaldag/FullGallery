@@ -1,26 +1,46 @@
 <html>
     <head>
         <title>FullGallery</title>
-        <link href="css/style.css" media="all" rel="stylesheet" type="text/css" />
+        <link href="../css/style.css" media="all" rel="stylesheet" type="text/css" />
+        <link href="../css/FullGallery.js.css" media="all" rel="stylesheet" type="text/css" />
     </head>
     <body>
-        <div id='gallery' style='height:100%; width:100%; position:absolute;overflow:hidden;z-index:-3'></div>
-        <script src="js/libs/jquery/jquery.min.js" />
-        <script src="js/libs/jquery-easing/jquery.easing.min.js" />
-        <script src="js/libs/fullgallery/FullGallery.js" />
+            <div id='gallery' class='background'>
+                    <ul>
+                            <li></li>
+                    </ul>
+            </div>
+        <div class="container">
+            <div class="page">
+                    <div id="gallery2"></div>
+            </div>
+        </div>
+        <script src="../js/libs/jquery/jquery.min.js" ></script>
+        <script src="../js/libs/jquery-easing/jquery.easing.min.js" ></script>
+        <script src="../js/libs/fullgallery/FullGallery.js" ></script>
         <script>
             $(document).ready(function() {
                 $('#gallery').FullGallery({images: [
-                        {url: 'http://www.artspecialday.com/wp-content/uploads/2013/06/www.enricoguala.it_.jpg'},
-                        {url: 'http://navigareinsieme.telecomitalia.it/wp-content/uploads/2012/09/LAND192.jpg'},
-                        {url: 'http://3.bp.blogspot.com/-j4nfyUUfZIc/UWvdIB8EouI/AAAAAAAABPc/e5AJ3P9-SQg/s1600/sailing_boat_at_sunset.jpg'},
-                        {url: 'http://killbillx.files.wordpress.com/2013/11/lidialorella-crisobonzi-viaggio-usa.jpg'},
-                        {url: 'http://aforismi.meglio.it/img/frasi/viaggio.jpg'}
+                        {url: 'http://images.cdn.fotopedia.com/flickr-7796856900-hd.jpg'},
+                         {url: 'http://i.images.cdn.fotopedia.com/flickr-4545825554-hd/Photography_Techniques/Astrophotography/Hubble_Captures_Spectacular_Landscape_in_the_Carina_Nebula.jpg'},
+                        {url: 'http://i.images.cdn.fotopedia.com/flickr-4504910807-hd/Photography_Techniques/Astrophotography/Hubble_Snaps_Heavyweight_of_the_Leo_Triplet.jpg'},
+                        {url: 'http://images.cdn.fotopedia.com/flickr-6987173182-hd.png'},
+                       {url: 'http://images.cdn.fotopedia.com/flickr-5014452663-hd.jpg'}
+                    ],
+                    time: 5000,
+                    autoplay: true});
+                
+                $('#gallery2').FullGallery({images: [
+                        {url: 'http://images.cdn.fotopedia.com/flickr-7796856900-hd.jpg'},
+                        {url: 'http://images.cdn.fotopedia.com/flickr-6987173182-hd.png'},
+                        {url: 'http://i.images.cdn.fotopedia.com/flickr-4545825554-hd/Photography_Techniques/Astrophotography/Hubble_Captures_Spectacular_Landscape_in_the_Carina_Nebula.jpg'},
+                        {url: 'http://i.images.cdn.fotopedia.com/flickr-4504910807-hd/Photography_Techniques/Astrophotography/Hubble_Snaps_Heavyweight_of_the_Leo_Triplet.jpg'},
+                        {url: 'http://images.cdn.fotopedia.com/flickr-5014452663-hd.jpg',content:'<b>Hola!</b>'}
                     ],
                     time: 5000,
                     autoplay: false,
-                    animation: 'fade',
-                    mini: 'thumbinal'});
+                    animation:'slide',
+                    mini:'thumbinal'});
             });
         </script>
     </body>
