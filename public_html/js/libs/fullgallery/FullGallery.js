@@ -4,13 +4,15 @@
  * 
  * Changelog
  * v1 (23/06/2014)
- * + Added back/foward button
+ * + Added back/forward button
  * + Fixed back-image management
- * + If have just 1 image no slideshow started
+ * + If just 1 image in the gallery no slideshow started
  * + Debug separate for each instance
+ * + Removed debug function from minified version
+ * + Added thumb active class on change image from non-thumb click
  * 
  * v0.3 (16/06/2014)
- * + Fixed var mistake
+ * + Fixed var's mistake
  * + Added callback functions
  * + Added difference between animation forward and previous
  * + Added delay between actual and next image
@@ -467,6 +469,9 @@
 
                                         $(options[id].base).children('div.FG_image').removeClass('actual');
                                         $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').addClass('actual');
+                                        
+                                        $(options[id].base).children('.FG_mini').children('li').removeClass('FG_thumb_list_actual');
+                                        $(options[id].base).children('.FG_mini').children('li[image="' + _next[id] + '"]').addClass('FG_thumb_list_actual');
                                 }
                         }
 
