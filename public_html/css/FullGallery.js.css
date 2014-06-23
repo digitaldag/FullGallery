@@ -48,3 +48,45 @@
         -webkit-box-shadow: 0 0 10px 2px #000 inset;
         -moz-box-shadow: 0 0 10px 2px #000 inset;
 }
+
+.FG_buttons{
+        margin: 0;
+        padding: 0;
+}
+
+.FG_buttons > li{
+        position: absolute;
+        display:block;
+        vertical-align: middle;
+        height: 10%;
+        min-height: 20px;
+        width: 2%;
+        min-width: 20px;
+        opacity: 0.3;
+        color: black;
+        font-weight: 800;
+        top: calc(50% - 10%/2);
+        cursor: pointer;
+}
+
+.FG_buttons > li.prev{
+      left: 0;
+      text-align: right;
+}
+
+.FG_buttons > li.next{
+      right: 0;
+      text-align: left;
+}
+
+.FG_buttons > li.prev:before{
+      content: '<';
+}
+
+.FG_buttons > li.next:before{
+      content: '>';
+}
+
+.FG_buttons > li:hover{
+        opacity: 0.5;
+}

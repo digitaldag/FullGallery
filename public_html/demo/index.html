@@ -1,47 +1,49 @@
 <html>
-    <head>
-        <title>FullGallery</title>
-        <link href="../css/style.css" media="all" rel="stylesheet" type="text/css" />
-        <link href="../css/FullGallery.js.css" media="all" rel="stylesheet" type="text/css" />
-    </head>
-    <body>
-            <div id='gallery' class='background'>
-                    <ul>
-                            <li></li>
-                    </ul>
-            </div>
-        <div class="container">
-            <div class="page">
-                    <div id="gallery2"></div>
-            </div>
-        </div>
-        <script src="../js/libs/jquery/jquery.min.js" ></script>
-        <script src="../js/libs/jquery-easing/jquery.easing.min.js" ></script>
-        <script src="../js/libs/fullgallery/FullGallery.js" ></script>
-        <script>
-            $(document).ready(function() {
-                $('#gallery').FullGallery({images: [
-                        {url: 'http://images.cdn.fotopedia.com/flickr-7796856900-hd.jpg'},
-                         {url: 'http://i.images.cdn.fotopedia.com/flickr-4545825554-hd/Photography_Techniques/Astrophotography/Hubble_Captures_Spectacular_Landscape_in_the_Carina_Nebula.jpg'},
-                        {url: 'http://i.images.cdn.fotopedia.com/flickr-4504910807-hd/Photography_Techniques/Astrophotography/Hubble_Snaps_Heavyweight_of_the_Leo_Triplet.jpg'},
-                        {url: 'http://images.cdn.fotopedia.com/flickr-6987173182-hd.png'},
-                       {url: 'http://images.cdn.fotopedia.com/flickr-5014452663-hd.jpg'}
-                    ],
-                    time: 5000,
-                    autoplay: true});
-                
-                $('#gallery2').FullGallery({images: [
-                        {url: 'http://images.cdn.fotopedia.com/flickr-7796856900-hd.jpg'},
-                        {url: 'http://images.cdn.fotopedia.com/flickr-6987173182-hd.png'},
-                        {url: 'http://i.images.cdn.fotopedia.com/flickr-4545825554-hd/Photography_Techniques/Astrophotography/Hubble_Captures_Spectacular_Landscape_in_the_Carina_Nebula.jpg'},
-                        {url: 'http://i.images.cdn.fotopedia.com/flickr-4504910807-hd/Photography_Techniques/Astrophotography/Hubble_Snaps_Heavyweight_of_the_Leo_Triplet.jpg'},
-                        {url: 'http://images.cdn.fotopedia.com/flickr-5014452663-hd.jpg',content:'<b>Hola!</b>'}
-                    ],
-                    time: 5000,
-                    autoplay: false,
-                    animation:'slide',
-                    mini:'thumbnails'});
-            });
-        </script>
-    </body>
+        <head>
+                <title>FullGallery</title>
+                <link href="../css/style.css" media="all" rel="stylesheet" type="text/css" />
+                <link href="../css/FullGallery.js.css" media="all" rel="stylesheet" type="text/css" />
+        </head>
+        <body>
+                <div id='gallery' class='background'>
+                        <ul>
+                                <li></li>
+                        </ul>
+                </div>
+                <div class="container">
+                        <div class="page">
+                                <div id="gallery2"></div>
+                        </div>
+                </div>
+                <script src="../js/libs/jquery/jquery.min.js" ></script>
+                <script src="../js/libs/jquery-easing/jquery.easing.min.js" ></script>
+                <script src="../js/libs/fullgallery/FullGallery.min.js" ></script>
+                <script>
+                        $(document).ready(function() {
+                                $('#gallery').FullGallery({images: [
+                                                {url: 'http://images.cdn.fotopedia.com/flickr-7796856900-hd.jpg'},
+                                                {url: 'http://i.images.cdn.fotopedia.com/flickr-4545825554-hd/Photography_Techniques/Astrophotography/Hubble_Captures_Spectacular_Landscape_in_the_Carina_Nebula.jpg'},
+                                                {url: 'http://i.images.cdn.fotopedia.com/flickr-4504910807-hd/Photography_Techniques/Astrophotography/Hubble_Snaps_Heavyweight_of_the_Leo_Triplet.jpg'},
+                                                {url: 'http://images.cdn.fotopedia.com/flickr-6987173182-hd.png'},
+                                                {url: 'http://images.cdn.fotopedia.com/flickr-5014452663-hd.jpg'}
+                                        ],
+                                        time: 5000,
+                                        autoplay: true});
+
+                                $('#gallery2').FullGallery({images: [
+                                                {url: 'http://images.cdn.fotopedia.com/flickr-7796856900-hd.jpg'},
+                                                {url: 'http://images.cdn.fotopedia.com/flickr-6987173182-hd.png'},
+                                                {url: 'http://i.images.cdn.fotopedia.com/flickr-4545825554-hd/Photography_Techniques/Astrophotography/Hubble_Captures_Spectacular_Landscape_in_the_Carina_Nebula.jpg'},
+                                                {url: 'http://i.images.cdn.fotopedia.com/flickr-4504910807-hd/Photography_Techniques/Astrophotography/Hubble_Snaps_Heavyweight_of_the_Leo_Triplet.jpg'},
+                                                {url: 'http://images.cdn.fotopedia.com/flickr-5014452663-hd.jpg', content: '<b>Hola!</b>'}
+                                        ],
+                                        time: 5000,
+                                        autoplay: false,
+                                        animation: 'slide',
+                                        mini: 'thumbnails',
+                                        buttons: true,
+                                        debug:true});
+                        });
+                </script>
+        </body>
 </html>
