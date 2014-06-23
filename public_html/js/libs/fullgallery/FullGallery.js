@@ -46,7 +46,7 @@
                         autoplay: false,
                         mini: null,
                         buttons: false,
-                        debug:false
+                        debug: false
                 }];
 
         var to = null;
@@ -233,10 +233,10 @@
                 switch (options[id].mini)
                 {
                         case 'thumbnails':
-                                thumbs_class = 'FG_thumb_list';
+                                thumbs_class = 'FG_mini FG_thumb_list';
                                 break;
                         default:
-                                thumbs_class = 'FG_button_list';
+                                thumbs_class = 'FG_mini FG_button_list';
                                 break;
                 }
 
@@ -273,14 +273,24 @@
                 thumbs += '</ul>';
 
                 $(options[id].base).prepend(buttons + thumbs);
-                
-                $(_baseId[id] + ' > ul.FG_buttons > li.prev').click(function(){$(options[id].base).FullGallery('prev');});
-                $(_baseId[id] + ' > ul.FG_buttons > li.next').click(function(){$(options[id].base).FullGallery('next');});
-                
-                $(_baseId[id] + ' > ul.' + thumbs_class + ' > li,' + _baseId[id] + '  > ul.' + thumbs_class + ' > li').click(function() {
+
+                $(_baseId[id] + ' > ul.FG_buttons > li.prev').click(function() {
                         if (!$(_baseId[id] + '.FG_image').is(':animated'))
                         {
-                                log('No animation, start animating',id);
+                                $(options[id].base).FullGallery('prev');
+                        }
+                });
+                $(_baseId[id] + ' > ul.FG_buttons > li.next').click(function() {
+                        if (!$(_baseId[id] + '.FG_image').is(':animated'))
+                        {
+                                $(options[id].base).FullGallery('next');
+                        }
+                });
+
+                $(_baseId[id] + ' > ul.FG_mini > li').click(function() {
+                        if (!$(_baseId[id] + '.FG_image').is(':animated'))
+                        {
+                                log('No animation, start animating', id);
                                 $(_baseId[id] + ' > ul > li').removeClass('FG_thumb_list_actual');
 
                                 img = $(this).attr('image') * 1;
@@ -296,7 +306,7 @@
                 options[id].total = i - 1;
                 options[id].prev = i - 1;
                 options[id].next = 1;
-                log(options[id],id);
+                log(options[id], id);
                 if (options[id].autoplay)
                         setTimeout(function() {
                                 play(id);
@@ -344,7 +354,7 @@
                         {
                                 _actual[id] = options[id].actual;
                                 _next[id] = options[id].prev;
-                                
+
                                 options[id].actual = options[id].prev;
                                 options[id].prev = (options[id].actual - 1 < 0) ? options[id].total : options[id].actual - 1;
                                 options[id].next = (options[id].actual + 1 > options[id].total) ? 0 : options[id].actual + 1;
@@ -353,17 +363,17 @@
                         {
                                 _actual[id] = options[id].actual;
                                 _next[id] = options[id].next;
-                        
+
                                 options[id].actual = options[id].next;
                                 options[id].prev = (options[id].actual - 1 < 0) ? options[id].total : options[id].actual - 1;
                                 options[id].next = (options[id].actual + 1 > options[id].total) ? 0 : options[id].actual + 1;
                         }
-                        
-                       log(options[id].prev+' < '+options[id].actual+' > '+options[id].next,id);
+
+                        log(options[id].prev + ' < ' + options[id].actual + ' > ' + options[id].next, id);
 
                         if (sA.before.actual != null) {
                                 $(options[id].base).children('div.FG_image[image="' + _actual[id] + '"]').css(sA.before.actual);
-                                log('Before set actual',id);
+                                log('Before set actual', id);
                                 if (typeof sAc.callbacks.before == 'function')
                                 {
                                         sAc.callbacks.before('actual', _actual[id]);
@@ -371,7 +381,7 @@
                         }
                         if (sA.before.next != null) {
                                 $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').css(sA.before.next);
-                                log('Before set next',id);
+                                log('Before set next', id);
                                 if (typeof sAc.callbacks.before == 'function')
                                 {
                                         sAc.callbacks.before('next', _next[id]);
@@ -379,32 +389,32 @@
                         }
 
                         if (sA.actualImageTo != null) {
-                                log('Actual animation start',id);
+                                log('Actual animation start', id);
                                 $(options[id].base).children('div.FG_image[image="' + _actual[id] + '"]').animate(sA.actualImageTo.css, sA.actualImageTo.time, sA.actualImageTo.method, function() {
                                         if (!sAc.sync && sA.nextImageTo != null)
                                         {
-                                                log('Sync false',id);
-                                                log('Next animation start',id);
+                                                log('Sync false', id);
+                                                log('Next animation start', id);
                                                 $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').animate(sA.nextImageTo.css, sA.nextImageTo.time, sA.nextImageTo.method, function() {
-                                                        log('After set acutal',id);
+                                                        log('After set acutal', id);
                                                         $(options[id].base).children('div.FG_image[image="' + _actual[id] + '"]').css(sA.after.actual);
                                                         if (typeof sAc.callbacks.after == 'function')
                                                         {
                                                                 sAc.callbacks.after('actual', _actual[id]);
                                                         }
-                                                        log('After set next',id);
+                                                        log('After set next', id);
                                                         $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').css(sA.after.next);
                                                         if (typeof sAc.callbacks.after == 'function')
                                                         {
                                                                 sAc.callbacks.after('next', _next[id]);
                                                         }
                                                 });
-                                                log('Next animation end',id);
+                                                log('Next animation end', id);
                                         }
                                         else
                                         {
-                                                log('Sync true',id);
-                                                log('After set acutal',id);
+                                                log('Sync true', id);
+                                                log('After set acutal', id);
                                                 $(options[id].base).children('div.FG_image[image="' + _actual[id] + '"]').css(sA.after.actual);
                                                 if (typeof sAc.callbacks.after == 'function')
                                                 {
@@ -412,19 +422,19 @@
                                                 }
                                         }
                                 });
-                                log('Actual animation end',id);
+                                log('Actual animation end', id);
                         }
                         if (sA.nextImageTo != null)
                         {
-                                log('Sync false',id);
-                                log('Next animation start',id);
+                                log('Sync false', id);
+                                log('Next animation start', id);
                                 if (sA.delay > 0)
                                 {
                                         $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').delay(sA.delay).animate(sA.nextImageTo.css, sA.nextImageTo.time, sA.nextImageTo.method, function() {
 
                                                 if (!sAc.sync)
                                                 {
-                                                        log('After set acutal',id);
+                                                        log('After set acutal', id);
                                                         $(options[id].base).children('div.FG_image[image="' + _actual[id] + '"]').css(sA.after.actual);
                                                         if (typeof sAc.callbacks.after == 'function')
                                                         {
@@ -432,14 +442,14 @@
                                                         }
                                                 }
 
-                                                log('After set next',id);
+                                                log('After set next', id);
                                                 $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').css(sA.after.next);
                                                 if (typeof sAc.callbacks.after == 'function')
                                                 {
                                                         sAc.callbacks.after('next', _next[id]);
                                                 }
                                         });
-                                        log('Next animation end',id);
+                                        log('Next animation end', id);
 
                                         $(options[id].base).children('div.FG_image').removeClass('actual');
                                         $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').addClass('actual');
@@ -450,7 +460,7 @@
 
                                                 if (!sAc.sync)
                                                 {
-                                                        log('After set acutal',id);
+                                                        log('After set acutal', id);
                                                         $(options[id].base).children('div.FG_image[image="' + _actual[id] + '"]').css(sA.after.actual);
                                                         if (typeof sAc.callbacks.after == 'function')
                                                         {
@@ -458,22 +468,24 @@
                                                         }
                                                 }
 
-                                                log('After set next',id);
+                                                log('After set next', id);
                                                 $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').css(sA.after.next);
                                                 if (typeof sAc.callbacks.after == 'function')
                                                 {
                                                         sAc.callbacks.after('next', _next[id]);
                                                 }
                                         });
-                                        log('Next animation end',id);
+                                        log('Next animation end', id);
 
                                         $(options[id].base).children('div.FG_image').removeClass('actual');
                                         $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').addClass('actual');
-                                        
-                                        $(options[id].base).children('.FG_mini').children('li').removeClass('FG_thumb_list_actual');
-                                        $(options[id].base).children('.FG_mini').children('li[image="' + _next[id] + '"]').addClass('FG_thumb_list_actual');
+
                                 }
+
                         }
+                        
+                        $(options[id].base).children('.FG_mini').children('li').removeClass('FG_thumb_list_actual');
+                        $(options[id].base).children('.FG_mini').children('li[image="' + _next[id] + '"]').addClass('FG_thumb_list_actual');
 
                         if (options[id].status == 1) {
                                 to = setTimeout(function() {
@@ -483,7 +495,7 @@
                 }
         }
 
-        var log = function(msg,id)
+        var log = function(msg, id)
         {
                 if (options[id].debug)
                 {
