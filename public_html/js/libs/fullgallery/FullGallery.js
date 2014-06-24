@@ -250,11 +250,14 @@
                 {
                         z = -3;
                         d = 'none';
+                        s = '';
                         if (i == 0) {
                                 z = -1;
                                 d = 'block';
+                                s = 'FG_thumb_list_actual';
+                                console.log(0);
                         }
-
+                        
                         $(options[id].base).append('<div class="FG_image" image="' + i + '" style="z-index:' + z + ';background-image:url(' + options[id].images[i].url + ');display:' + d + ';">' + ((options[id].images[i].content == undefined) ? '' : options[id].images[i].content) + '</div>');
 
                         if (options[id].mini != null)
@@ -262,10 +265,10 @@
                                 switch (options[id].mini)
                                 {
                                         case 'thumbnails':
-                                                thumbs += '<li class="FG_thumb_image" image="' + (i) + '" style="background-image:url(' + options[id].images[i].url + ');background-size:cover;background-position: center center;"></li>';
+                                                thumbs += '<li class="FG_thumb_image '+s+'" image="' + (i) + '" style="background-image:url(' + options[id].images[i].url + ');background-size:cover;background-position: center center;"></li>';
                                                 break;
                                         default:
-                                                thumbs += '<li class="FG_thumb_button" image="' + (i) + '"></li>';
+                                                thumbs += '<li class="FG_thumb_button '+s+'" image="' + (i) + '"></li>';
                                                 break;
                                 }
                         }
