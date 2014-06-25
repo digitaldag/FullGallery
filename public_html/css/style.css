@@ -26,7 +26,8 @@ html,body{height:100%; width:100%;margin:0;padding:0;}
 
 .container > .page{
         width: 80%;
-        height:96%;
+        height:60%;
+        margin-top: 10%;
         margin-left: 10%;
         margin-right: 10%;
         background-color: #fff;
@@ -44,6 +45,18 @@ html,body{height:100%; width:100%;margin:0;padding:0;}
         z-index: 2;
 }
 
+#gallery3{
+        width:calc(100% - 10px);
+        height: 50%;
+        float:left;
+        overflow: hidden;
+        position: relative;
+        margin:5px;
+        z-index: 2;
+}
+
+#gallery2  h2{text-align: right;}
+
 #gallery2 li{
         z-index: 10;
 }
@@ -56,5 +69,5 @@ html,body{height:100%; width:100%;margin:0;padding:0;}
         position: absolute;
         top: 0;
         width: 25%;
-        z-index: 100;
+        z-index: 0;
 }

@@ -1,8 +1,13 @@
-/* FullGallery v1
+/* FullGallery v1.1
  * 
  * Responsive multi-Gallery with thumbinals, customizable transiction and content slideshow
  * 
  * Changelog
+ * v1.1 (25/06/2014)
+ * + Change tab detection
+ * + Callback functions on init, animationStart, animationEnd, play, stop, tabFocus and tabBlur
+ * + Timeout reset on image change manually
+ * 
  * v1 (23/06/2014)
  * + Added back/forward button
  * + Fixed back-image management
@@ -33,7 +38,7 @@
         var enVars = {};
         var options = [{
                         images: [],
-                        status: 0,
+                        status: null,
                         animation: 'fade',
                         animationRunning: 0,
                         time: 6000,
@@ -46,13 +51,29 @@
                         autoplay: false,
                         mini: null,
                         buttons: false,
+                        resumePlay: true,
+                        callback: {
+                                init: function() {
+                                },
+                                animationStart: function() {
+                                },
+                                animationEnd: function() {
+                                },
+                                play: function() {
+                                },
+                                stop: function() {
+                                },
+                                tabFocus: function() {
+                                },
+                                tabBlur: function() {
+                                }
+                        },
                         debug: false
                 }];
 
-        var to = null;
+        var to = new Array();
 
         var _actual = new Array();
-        var _prev = new Array();
         var _next = new Array();
         var _baseId = new Array();
 
@@ -175,6 +196,8 @@
                         callback = parseInt(arguments[0] * 1);
                         if (options[id].images[callback] != undefined && callback != options[id].actual)
                         {
+                                clearTimeout(to[id]);
+                                
                                 options[id].actual = options[id].actual;
                                 options[id].prev = (callback < 0) ? options[id].total : callback;
                                 options[id].next = callback;
@@ -216,6 +239,24 @@
 
         var init = function(id)
         {
+                if (typeof document.hidden !== "undefined") {
+                        enVars.visibilityValue = "hidden";
+                        enVars.visibilityChange = "visibilitychange";
+                } else if (typeof document.mozHidden !== "undefined") {
+                        enVars.visibilityValue = "mozHidden";
+                        enVars.visibilityChange = "mozvisibilitychange";
+                } else if (typeof document.msHidden !== "undefined") {
+                        enVars.visibilityValue = "msHidden";
+                        enVars.visibilityChange = "msvisibilitychange";
+                } else if (typeof document.webkitHidden !== "undefined") {
+                        enVars.visibilityValue = "webkitHidden";
+                        enVars.visibilityChange = "webkitvisibilitychange";
+                }
+
+                document.addEventListener(enVars.visibilityChange, function() {
+                        visibilityChange(id);
+                }, false);
+
                 _baseId[id] = options[id].base;
                 _baseId[id] = '#' + _baseId[id].attr('id') + ' ';
                 if (options[id].images.length == 0)
@@ -255,9 +296,8 @@
                                 z = -1;
                                 d = 'block';
                                 s = 'FG_thumb_list_actual';
-                                console.log(0);
                         }
-                        
+
                         $(options[id].base).append('<div class="FG_image" image="' + i + '" style="z-index:' + z + ';background-image:url(' + options[id].images[i].url + ');display:' + d + ';">' + ((options[id].images[i].content == undefined) ? '' : options[id].images[i].content) + '</div>');
 
                         if (options[id].mini != null)
@@ -265,10 +305,10 @@
                                 switch (options[id].mini)
                                 {
                                         case 'thumbnails':
-                                                thumbs += '<li class="FG_thumb_image '+s+'" image="' + (i) + '" style="background-image:url(' + options[id].images[i].url + ');background-size:cover;background-position: center center;"></li>';
+                                                thumbs += '<li class="FG_thumb_image ' + s + '" image="' + (i) + '" style="background-image:url(' + options[id].images[i].url + ');background-size:cover;background-position: center center;"></li>';
                                                 break;
                                         default:
-                                                thumbs += '<li class="FG_thumb_button '+s+'" image="' + (i) + '"></li>';
+                                                thumbs += '<li class="FG_thumb_button ' + s + '" image="' + (i) + '"></li>';
                                                 break;
                                 }
                         }
@@ -278,20 +318,20 @@
                 $(options[id].base).prepend(buttons + thumbs);
 
                 $(_baseId[id] + ' > ul.FG_buttons > li.prev').click(function() {
-                        if (!$(_baseId[id] + '.FG_image').is(':animated'))
+                        if (!$(_baseId[id] + ' > .FG_image').is(':animated'))
                         {
                                 $(options[id].base).FullGallery('prev');
                         }
                 });
                 $(_baseId[id] + ' > ul.FG_buttons > li.next').click(function() {
-                        if (!$(_baseId[id] + '.FG_image').is(':animated'))
+                        if (!$(_baseId[id] + ' > .FG_image').is(':animated'))
                         {
                                 $(options[id].base).FullGallery('next');
                         }
                 });
 
                 $(_baseId[id] + ' > ul.FG_mini > li').click(function() {
-                        if (!$(_baseId[id] + '.FG_image').is(':animated'))
+                        if (!$(_baseId[id] + ' > .FG_image').is(':animated'))
                         {
                                 log('No animation, start animating', id);
                                 $(_baseId[id] + ' > ul > li').removeClass('FG_thumb_list_actual');
@@ -310,29 +350,45 @@
                 options[id].prev = i - 1;
                 options[id].next = 1;
                 log(options[id], id);
-                if (options[id].autoplay)
-                        setTimeout(function() {
+
+                if (options[id].autoplay) {
+                        options[id].status = 1;
+
+                        to[id] = setTimeout(function() {
                                 play(id);
                         }, options[id].time);
+                }
+
+                if (typeof options[id].callback.init == 'function')
+                {
+                        options[id].callback.init();
+                }
         }
 
         var stop = function(id) {
-
-                options[id].status = 1;
-                to = null;
-
+                options[id].status = 0;
+                clearTimeout(to[id]);
+                if (typeof options[id].callback.stop == 'function')
+                {
+                        options[id].callback.stop();
+                }
         }
 
         var play = function(id) {
-
                 options[id].status = 1;
+                if (typeof options[id].callback.play == 'function')
+                {
+                        options[id].callback.play();
+                }
                 animation(id, options[id].animation, 'n', false);
         }
 
         var next = function(id) {
+                clearTimeout(to[id]);
                 animation(id, 'n', false);
         }
         var prev = function(id) {
+                clearTimeout(to[id]);
                 animation(id, 'p', false);
         }
 
@@ -340,6 +396,10 @@
 
                 if (options[id].total > 1)
                 {
+                        if (typeof options[id].callback.animationStart == 'function')
+                        {
+                                options[id].callback.animationStart();
+                        }
                         switch (PoN)
                         {
                                 case 'p':
@@ -486,14 +546,19 @@
                                 }
 
                         }
-                        
+
                         $(options[id].base).children('.FG_mini').children('li').removeClass('FG_thumb_list_actual');
                         $(options[id].base).children('.FG_mini').children('li[image="' + _next[id] + '"]').addClass('FG_thumb_list_actual');
 
                         if (options[id].status == 1) {
-                                to = setTimeout(function() {
+                                to[id] = setTimeout(function() {
                                         animation(id, 'n');
                                 }, options[id].time);
+                        }
+
+                        if (typeof options[id].callback.animationEnd == 'function')
+                        {
+                                options[id].callback.animationEnd();
                         }
                 }
         }
@@ -503,6 +568,30 @@
                 if (options[id].debug)
                 {
                         console.log(msg);
+                }
+        }
+
+        var visibilityChange = function(id) {
+                if (options[id].status != null)
+                {
+                        if (document[enVars.visibilityValue] && options[id].status == 1)
+                        {
+                                log('Visibility change HIDE', id);
+                                $(options[id].base).FullGallery('stop');
+                                if (typeof options[id].callback.tabBlur == 'function')
+                                {
+                                        options[id].callback.tabBlur();
+                                }
+                        }
+                        else if (options[id].status == 0 && options[id].resumePlay == true)
+                        {
+                                log('Visibility change SHOW', id);
+                                $(options[id].base).FullGallery('play');
+                                if (typeof options[id].callback.tabFocus == 'function')
+                                {
+                                        options[id].callback.tabFocus();
+                                }
+                        }
                 }
         }
 
