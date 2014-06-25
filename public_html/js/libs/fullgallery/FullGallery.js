@@ -90,7 +90,7 @@
                                 after: {
                                         actual: {zIndex: -3, display: 'none', opacity: '0.0'},
                                         next: {zIndex: -1, display: 'block'}
-                                },
+                                }
                         },
                         previous: {
                                 before: {
@@ -103,7 +103,7 @@
                                 after: {
                                         actual: {zIndex: -3, display: 'none', opacity: '0.0'},
                                         next: {zIndex: -1, display: 'block'}
-                                },
+                                }
                         },
                         sync: false,
                         callbacks: {
@@ -138,7 +138,7 @@
                                 after: {
                                         actual: {zIndex: 1, display: 'block', top: 0, left: '-100%'},
                                         next: {zIndex: 1, display: 'block', top: 0, left: 0}
-                                },
+                                }
                         },
                         sync: true,
                         callbacks: {
@@ -197,12 +197,12 @@
                         if (options[id].images[callback] != undefined && callback != options[id].actual)
                         {
                                 clearTimeout(to[id]);
-                                
+
                                 options[id].actual = options[id].actual;
                                 options[id].prev = (callback < 0) ? options[id].total : callback;
                                 options[id].next = callback;
                                 effect = (options[id].next > options[id].actual) ? 'n' : 'p';
-                                animation(id, effect, true);
+                                animation(id, effect);
                         }
                 }
 
@@ -318,16 +318,10 @@
                 $(options[id].base).prepend(buttons + thumbs);
 
                 $(_baseId[id] + ' > ul.FG_buttons > li.prev').click(function() {
-                        if (!$(_baseId[id] + ' > .FG_image').is(':animated'))
-                        {
-                                $(options[id].base).FullGallery('prev');
-                        }
+                        $(options[id].base).FullGallery('prev');
                 });
                 $(_baseId[id] + ' > ul.FG_buttons > li.next').click(function() {
-                        if (!$(_baseId[id] + ' > .FG_image').is(':animated'))
-                        {
-                                $(options[id].base).FullGallery('next');
-                        }
+                        $(options[id].base).FullGallery('next');
                 });
 
                 $(_baseId[id] + ' > ul.FG_mini > li').click(function() {
@@ -380,19 +374,25 @@
                 {
                         options[id].callback.play();
                 }
-                animation(id, options[id].animation, 'n', false);
+                animation(id, options[id].animation, 'n');
         }
 
         var next = function(id) {
-                clearTimeout(to[id]);
-                animation(id, 'n', false);
+                if (!$(_baseId[id] + ' > .FG_image').is(':animated'))
+                {
+                        clearTimeout(to[id]);
+                        animation(id, 'n');
+                }
         }
         var prev = function(id) {
-                clearTimeout(to[id]);
-                animation(id, 'p', false);
+                if (!$(_baseId[id] + ' > .FG_image').is(':animated'))
+                {
+                        clearTimeout(to[id]);
+                        animation(id, 'p');
+                }
         }
 
-        var animation = function(id, PoN, s) {
+        var animation = function(id, PoN) {
 
                 if (options[id].total > 1)
                 {
