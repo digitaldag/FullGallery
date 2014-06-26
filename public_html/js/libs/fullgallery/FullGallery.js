@@ -1,8 +1,12 @@
-/* FullGallery v1.1
+/* FullGallery v1.1.1
  * 
  * Responsive multi-Gallery with thumbinals, customizable transiction and content slideshow
  * 
  * Changelog
+ * v1.1.1 (26/06/2014)
+ * + Added numeric type in gallery thumbs
+ * + Added jquery ui support for thumb transiction
+ * 
  * v1.1 (25/06/2014)
  * + Change tab detection
  * + Callback functions on init, animationStart, animationEnd, play, stop, tabFocus and tabBlur
@@ -49,7 +53,7 @@
                         base: null,
                         started: 0,
                         autoplay: false,
-                        mini: null,
+                        mini: false,
                         buttons: false,
                         resumePlay: true,
                         callback: {
@@ -276,6 +280,9 @@
                         case 'thumbnails':
                                 thumbs_class = 'FG_mini FG_thumb_list';
                                 break;
+                        case 'numbers':
+                                thumbs_class = 'FG_mini FG_number_list';
+                                break;
                         default:
                                 thumbs_class = 'FG_mini FG_button_list';
                                 break;
@@ -307,6 +314,9 @@
                                         case 'thumbnails':
                                                 thumbs += '<li class="FG_thumb_image ' + s + '" image="' + (i) + '" style="background-image:url(' + options[id].images[i].url + ');background-size:cover;background-position: center center;"></li>';
                                                 break;
+                                        case 'numbers':
+                                                thumbs += '<li class="FG_thumb_number ' + s + '" image="' + (i) + '" >' + (i + 1) + '</li>';
+                                                break;
                                         default:
                                                 thumbs += '<li class="FG_thumb_button ' + s + '" image="' + (i) + '"></li>';
                                                 break;
@@ -315,7 +325,9 @@
                 }
                 thumbs += '</ul>';
 
-                $(options[id].base).prepend(buttons + thumbs);
+                append = ((options[id].buttons) ? buttons : '') + ((options[id].mini !== false) ? thumbs : '');
+
+                $(options[id].base).prepend(append);
 
                 $(_baseId[id] + ' > ul.FG_buttons > li.prev').click(function() {
                         $(options[id].base).FullGallery('prev');
@@ -328,14 +340,11 @@
                         if (!$(_baseId[id] + ' > .FG_image').is(':animated'))
                         {
                                 log('No animation, start animating', id);
-                                $(_baseId[id] + ' > ul > li').removeClass('FG_thumb_list_actual');
-
                                 img = $(this).attr('image') * 1;
                                 img = (img >= options[id].images.length) ? 0 : img;
                                 img = (img < 0) ? options[id].images.length - 1 : img;
 
                                 $(options[id].base).FullGallery(img);
-                                $(this).addClass('FG_thumb_list_actual');
                         }
                 });
 
@@ -547,9 +556,18 @@
 
                         }
 
-                        $(options[id].base).children('.FG_mini').children('li').removeClass('FG_thumb_list_actual');
-                        $(options[id].base).children('.FG_mini').children('li[image="' + _next[id] + '"]').addClass('FG_thumb_list_actual');
+                        if (typeof jQuery.ui !== 'undefined')
+                        {
+                                time = (sA.actualImageTo != null && sA.nextImageTo != null) ? sA.actualImageTo.time * 1 + sA.nextImageTo.time * 1 : 1000;
 
+                                $(options[id].base).children('.FG_mini').children('li').removeClass('FG_thumb_list_actual', time);
+                                $(options[id].base).children('.FG_mini').children('li[image="' + _next[id] + '"]').addClass('FG_thumb_list_actual', time);
+                        }
+                        else
+                        {
+                                $(options[id].base).children('.FG_mini').children('li').removeClass('FG_thumb_list_actual');
+                                $(options[id].base).children('.FG_mini').children('li[image="' + _next[id] + '"]').addClass('FG_thumb_list_actual');
+                        }
                         if (options[id].status == 1) {
                                 to[id] = setTimeout(function() {
                                         animation(id, 'n');

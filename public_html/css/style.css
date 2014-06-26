@@ -54,6 +54,15 @@ html,body{height:100%; width:100%;margin:0;padding:0;}
         margin:5px;
         z-index: 2;
 }
+#gallery4{
+        width:calc(100% - 10px);
+        height: 50%;
+        float:left;
+        overflow: hidden;
+        position: relative;
+        margin:5px;
+        z-index: 2;
+}
 
 #gallery2  h2{text-align: right;}
 

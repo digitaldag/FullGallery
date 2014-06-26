@@ -33,21 +33,32 @@
         width: 10%;
         cursor: pointer;
         list-style: none;
+        border: transparent 3px solid;
 }
 
 .FG_thumb_button{
-        position: relative;
-        float: left;
-        height: 10%;
-        width: 10%;
         cursor: pointer;
+        float: left;
+        height: 20px;
+        list-style: disc inside none;
+        margin: 2px;
+        position: relative;
+        width: 20px;
 }
 
-.FG_thumb_list_actual{
-        box-shadow: 0 0 0px 4px #fff inset;
-        -webkit-box-shadow: 0 0 0px 4px #fff inset;
-        -moz-box-shadow: 0 0 0px 4px #fff inset;
+.FG_thumb_list > .FG_thumb_list_actual{
+        border: white 3px solid;
 }
+
+.FG_number_list > .FG_thumb_list_actual{
+        background: #000;
+        color:#fff;
+}
+
+.FG_button_list > .FG_thumb_list_actual{
+        color:#fff;
+}
+
 
 .FG_buttons{
         margin: 0;
@@ -71,23 +82,46 @@
 }
 
 .FG_buttons > li.prev{
-      left: 0;
-      text-align: center;
+        left: 0;
+        text-align: center;
 }
 
 .FG_buttons > li.next{
-      right: 0;
-      text-align: center;
+        right: 0;
+        text-align: center;
 }
 
 .FG_buttons > li.prev:before{
-      content: '<';
+        content: '<';
 }
 
 .FG_buttons > li.next:before{
-      content: '>';
+        content: '>';
 }
 
 .FG_buttons > li:hover{
         opacity: 1;
+}
+
+.FG_thumb_number{
+        position: relative;
+        float: left;
+        height: 20px;
+        width: 20px;
+        cursor: pointer;
+        margin:2px;
+        background: #fff;
+        list-style: none;
+        display: block;
+        text-align: center;
+}
+
+.FG_number_list{
+        bottom: 0;
+        height: 20px;
+        left: 0;
+        margin: 0;
+        padding: 0;
+        position: absolute;
+        width: 100%;
 }
