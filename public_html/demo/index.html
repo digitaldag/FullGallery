@@ -13,36 +13,42 @@
                         </div>
                 </div>
                 <script src="../js/libs/jquery/jquery.min.js" ></script>
-                <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+                <script src="../js/libs/jqueryui/jquery-ui.js"></script>
                 <script src="../js/libs/jquery-easing/jquery.easing.min.js" ></script>
                 <script src="../js/libs/fullgallery/FullGallery.js" ></script>
                 <!--script src="../js/libs/fullgallery/FullGallery.min.js" ></script-->
                 <script>
-                                $(document).ready(function() {
-                        $('#gallery').FullGallery({images: [
-                        {url: 'http://images.cdn.fotopedia.com/flickr-7796856900-hd.jpg'},
-                        {url: 'http://i.images.cdn.fotopedia.com/flickr-4545825554-hd/Photography_Techniques/Astrophotography/Hubble_Captures_Spectacular_Landscape_in_the_Carina_Nebula.jpg'},
-                        {url: 'http://i.images.cdn.fotopedia.com/flickr-4504910807-hd/Photography_Techniques/Astrophotography/Hubble_Snaps_Heavyweight_of_the_Leo_Triplet.jpg'},
-                        {url: 'http://images.cdn.fotopedia.com/flickr-6987173182-hd.png'},
-                        {url: 'http://images.cdn.fotopedia.com/flickr-5014452663-hd.jpg'}
-                        ],
-                                time: 5000,
-                                autoplay: true
-                        });
+                        $(document).ready(function() {
+                                $('#gallery').FullGallery({images: [
+                                                {url: 'http://i.images.cdn.fotopedia.com/flickr-4545825554-hd/Photography_Techniques/Astrophotography/Hubble_Captures_Spectacular_Landscape_in_the_Carina_Nebula.jpg'},
+                                                {url: '../video/small.ogv', type: 'video'},
+                                                {url: 'http://i.images.cdn.fotopedia.com/flickr-4504910807-hd/Photography_Techniques/Astrophotography/Hubble_Snaps_Heavyweight_of_the_Leo_Triplet.jpg'},
+                                                {url: 'http://images.cdn.fotopedia.com/flickr-6987173182-hd.png'},
+                                                {url: 'http://images.cdn.fotopedia.com/flickr-5014452663-hd.jpg'}
+                                        ],
+                                        time: 5000,
+                                        autoplay: true,
+                                        countdown: {active: true, style: {start: '_0', end: '_100'}}
+                                });
                                 $('#gallery2').FullGallery({images: [
-                        {url: 'http://images.cdn.fotopedia.com/flickr-7796856900-hd.jpg'},
-                        {url: 'http://images.cdn.fotopedia.com/flickr-6987173182-hd.png'},
-                        {url: 'http://i.images.cdn.fotopedia.com/flickr-4504910807-hd/Photography_Techniques/Astrophotography/Hubble_Snaps_Heavyweight_of_the_Leo_Triplet.jpg', content:'<h2>Content slider</h2><div><p>Some funny text!<p><p>With <a href="#">links</a>!</p><p>Controlling other <a href="javascript:$(\'#gallery\').FullGallery(\'next\');">gallery</a></p></div>'},
-                        {url: 'http://images.cdn.fotopedia.com/flickr-5014452663-hd.jpg', content: '<h2>Gallery INCEPTION</h2><div id="gallery3"><ul><li style="background:url(http://upload.wikimedia.org/wikipedia/commons/e/e9/Sombrero_Galaxy_in_infrared_light_%28Hubble_Space_Telescope_and_Spitzer_Space_Telescope%29.jpg);"></li><li style="background:url(http://upload.wikimedia.org/wikipedia/commons/4/4d/Iss007e10807_darker.jpg);"></li><li style="background:url(http://upload.wikimedia.org/wikipedia/commons/8/80/NGC_2818_by_the_Hubble_Space_Telescope.jpg);"></li></ul></div>'},
-                        {url: 'http://i.images.cdn.fotopedia.com/flickr-4545825554-hd/Photography_Techniques/Astrophotography/Hubble_Captures_Spectacular_Landscape_in_the_Carina_Nebula.jpg', content: '<h2>Gallery INCEPTION 2</h2><div id="gallery4"><ul><li style="background:url(http://upload.wikimedia.org/wikipedia/commons/e/e9/Sombrero_Galaxy_in_infrared_light_%28Hubble_Space_Telescope_and_Spitzer_Space_Telescope%29.jpg);"></li><li style="background:url(http://upload.wikimedia.org/wikipedia/commons/4/4d/Iss007e10807_darker.jpg);"></li><li style="background:url(http://upload.wikimedia.org/wikipedia/commons/8/80/NGC_2818_by_the_Hubble_Space_Telescope.jpg);"></li></ul></div>'}
-                        ],
-                                time: 5000,
-                                autoplay: false,
-                                animation: 'slide',
-                                mini: 'thumbnails',
-                                buttons: true,
-                                callback:{init:function(){$('#gallery3').FullGallery({autoplay:true, mini:'numbers'}); $('#gallery4').FullGallery({autoplay:true, mini:'buttons'}); }}
-                        });
+                                                {url: 'http://images.cdn.fotopedia.com/flickr-7796856900-hd.jpg'},
+                                                {url: '../video/small.ogv', type: 'video', loop: true, controls: true, autoplay: false},
+                                                {url: 'https://www.youtube.com/embed/TCL94-MsxYc', type: 'youtube', loop: true, controls: false, autoplay: false, info: false, height: 315, width: 560},
+                                                {url: 'http://images.cdn.fotopedia.com/flickr-6987173182-hd.png'},
+                                                {url: 'http://i.images.cdn.fotopedia.com/flickr-4504910807-hd/Photography_Techniques/Astrophotography/Hubble_Snaps_Heavyweight_of_the_Leo_Triplet.jpg', content: '<h2>Content slider</h2><div><p>Some funny text!<p><p>With <a href="#">links</a>!</p><p>Controlling other <a href="javascript:$(\'#gallery\').FullGallery(\'next\');">gallery</a></p></div>'},
+                                                {url: 'http://images.cdn.fotopedia.com/flickr-5014452663-hd.jpg', content: '<h2>Gallery INCEPTION</h2><div id="gallery3"><ul><li style="background:url(http://upload.wikimedia.org/wikipedia/commons/e/e9/Sombrero_Galaxy_in_infrared_light_%28Hubble_Space_Telescope_and_Spitzer_Space_Telescope%29.jpg);"></li><li style="background:url(http://upload.wikimedia.org/wikipedia/commons/4/4d/Iss007e10807_darker.jpg);"></li><li style="background:url(http://upload.wikimedia.org/wikipedia/commons/8/80/NGC_2818_by_the_Hubble_Space_Telescope.jpg);"></li></ul></div>'},
+                                                {url: 'http://i.images.cdn.fotopedia.com/flickr-4545825554-hd/Photography_Techniques/Astrophotography/Hubble_Captures_Spectacular_Landscape_in_the_Carina_Nebula.jpg', content: '<h2>Gallery INCEPTION 2</h2><div id="gallery4"><ul><li style="background:url(http://upload.wikimedia.org/wikipedia/commons/e/e9/Sombrero_Galaxy_in_infrared_light_%28Hubble_Space_Telescope_and_Spitzer_Space_Telescope%29.jpg);"></li><li style="background:url(http://upload.wikimedia.org/wikipedia/commons/4/4d/Iss007e10807_darker.jpg);"></li><li style="background:url(http://upload.wikimedia.org/wikipedia/commons/8/80/NGC_2818_by_the_Hubble_Space_Telescope.jpg);"></li></ul></div>'}
+                                        ],
+                                        time: 5000,
+                                        autoplay: false,
+                                        animation: 'slide',
+                                        mini: 'thumbnails',
+                                        buttons: true,
+                                        callback: {init: function() {
+                                                        $('#gallery3').FullGallery({autoplay: true, mini: 'numbers'});
+                                                        $('#gallery4').FullGallery({autoplay: true, mini: 'buttons'});
+                                                }}
+                                });
                         });
                 </script>
         </body>

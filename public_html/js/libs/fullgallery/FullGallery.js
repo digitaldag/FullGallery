@@ -1,8 +1,14 @@
-/* FullGallery v1.1.1
+/* FullGallery v1.1.2
  * 
  * Responsive multi-Gallery with thumbinals, customizable transiction and content slideshow
  * 
  * Changelog
+ * v1.1.2 (27/06/2014)
+ * + Added background and slider html5 video
+ * + Added background Youtube video
+ * + Added thumb from video
+ * + Added countdown element
+ * 
  * v1.1.1 (26/06/2014)
  * + Added numeric type in gallery thumbs
  * + Added jquery ui support for thumb transiction
@@ -38,6 +44,8 @@
  * Contacts: digitald(at)big-d-web(dot)com
  */
 (function($) {
+
+        //Vars and default options
         var content = [];
         var enVars = {};
         var options = [{
@@ -56,6 +64,14 @@
                         mini: false,
                         buttons: false,
                         resumePlay: true,
+                        orientation: null,
+                        ratio: null,
+                        countdown: {active: false,
+                                style: {
+                                        start: '_0',
+                                        end: '_100'
+                                }
+                        },
                         callback: {
                                 init: function() {
                                 },
@@ -81,6 +97,7 @@
         var _next = new Array();
         var _baseId = new Array();
 
+        //Animation samples
         var animations = {
                 fade: {
                         forward: {
@@ -127,7 +144,7 @@
                                 delay: 0,
                                 nextImageTo: {css: {left: '0'}, time: 1000, method: 'easeInOutExpo'},
                                 after: {
-                                        actual: {zIndex: 1, display: 'block', top: 0, left: '100%'},
+                                        actual: {zIndex: 1, display: 'none', top: 0, left: '100%'},
                                         next: {zIndex: 1, display: 'block', top: 0, left: 0}
                                 }
                         },
@@ -140,7 +157,7 @@
                                 delay: 0,
                                 nextImageTo: {css: {left: '0'}, time: 1000, method: 'easeInOutExpo'},
                                 after: {
-                                        actual: {zIndex: 1, display: 'block', top: 0, left: '-100%'},
+                                        actual: {zIndex: 1, display: 'none', top: 0, left: '-100%'},
                                         next: {zIndex: 1, display: 'block', top: 0, left: 0}
                                 }
                         },
@@ -154,6 +171,7 @@
                 }
         }
 
+        //Starter
         $.fn.FullGallery = function()
         {
                 argL = arguments.length;
@@ -193,6 +211,9 @@
                                 case 'prev':
                                         callback = prev;
                                         break;
+                                case 'resize':
+                                        callback = resize;
+                                        break;
                         }
                 }
                 else if (argL == 1 && typeof arguments[0] == 'number')
@@ -213,7 +234,9 @@
                 if (callback)
                 {
                         if (typeof callback == 'function')
+                        {
                                 callback(id);
+                        }
                 }
                 else
                 {
@@ -241,8 +264,10 @@
                 }
         }
 
+        //Costructor
         var init = function(id)
         {
+                //Check for right tab visibility value
                 if (typeof document.hidden !== "undefined") {
                         enVars.visibilityValue = "hidden";
                         enVars.visibilityChange = "visibilitychange";
@@ -257,12 +282,16 @@
                         enVars.visibilityChange = "webkitvisibilitychange";
                 }
 
+                //And set a event
                 document.addEventListener(enVars.visibilityChange, function() {
                         visibilityChange(id);
                 }, false);
 
+                //Set baseId for future refetence
                 _baseId[id] = options[id].base;
                 _baseId[id] = '#' + _baseId[id].attr('id') + ' ';
+
+                //If no images in the array, check for ul and li inside and write an array
                 if (options[id].images.length == 0)
                 {
                         elements = 0;
@@ -275,6 +304,7 @@
                 }
                 $(options[id].base).empty();
 
+                //Check what kind of mini-gallery is setted
                 switch (options[id].mini)
                 {
                         case 'thumbnails':
@@ -288,11 +318,19 @@
                                 break;
                 }
 
+                //Set prev/next buttons if setted
                 buttons = '';
                 if (options[id].buttons) {
                         buttons = '<ul class="FG_buttons"><li class="prev"></li><li class="next"></li></ul>';
                 }
 
+                //Set countdown if option true
+                countdown = '';
+                if (options[id].countdown.active) {
+                        countdown = '<div class="FG_countdown"><div class="_0"></div></div>';
+                }
+
+                //Set thumbs if setted
                 thumbs = '<ul class="' + thumbs_class + '">';
                 for (i = 0; i < options[id].images.length; i++)
                 {
@@ -305,14 +343,89 @@
                                 s = 'FG_thumb_list_actual';
                         }
 
-                        $(options[id].base).append('<div class="FG_image" image="' + i + '" style="z-index:' + z + ';background-image:url(' + options[id].images[i].url + ');display:' + d + ';">' + ((options[id].images[i].content == undefined) ? '' : options[id].images[i].content) + '</div>');
+                        //Set slides
+                        if (options[id].images[i].type == 'video')
+                        {
+                                loop = (options[id].images[i].loop) ? 'loop' : '';
+                                controls = (options[id].images[i].controls) ? 'controls' : '';
+                                autoplay = (options[id].images[i].autoplay) ? 'autoplay' : '';
+                                video = '<video class="FG_video" id="' + id + '_video_' + i + '" image="' + i + '" base="' + id + '" ' + autoplay + ' ' + loop + ' ' + controls + '>';
+                                sources = options[id].images[i].url.split(';');
+                                for (i = 0; i < sources.length; i++)
+                                {
+                                        source = sources[i].split('|');
+                                        if (source.length == 2)
+                                        {
+                                                video += '<source src="' + source[0] + '" type="' + source[1] + '">';
+                                        }
+                                        else
+                                        {
+                                                video += '<source src="' + sources[i] + '">';
+                                        }
+                                }
+                                video += '</video>';
+                                $(options[id].base).append('<div class="FG_image" image="' + i + '" style="z-index:' + z + ';display:' + d + ';">' + video + ((options[id].images[i].content == undefined) ? '' : options[id].images[i].content) + '</div>');
+                        }
+                        else if (options[id].images[i].type == 'youtube')
+                        {
+                                url = options[id].images[i].url;
+                                if (url.indexOf('watch') >= 0)
+                                {
+                                        //http://www.youtube.com/watch?v=0g9poWKKpbU&list=RDTCL94-MsxYc&feature=share
+                                        url = url.match(/v=(.*)/);
+                                        url = url[1];
+                                        url = url.split('&');
+                                        url = url[0];
+                                }
+                                else if (url.indexOf('embed') >= 0)
+                                {
+                                        ////www.youtube.com/embed/0g9poWKKpbU?list=RDTCL94-MsxYc
+                                        url = url.match(/\/embed\/(.*)[\?]*/);
+                                        url = url[1];
+                                        url = url.split('&');
+                                        url = url[0];
+                                }
+                                options[id].images[i].url = url;
+
+                                loop = (options[id].images[i].loop) ? '1' : '0';
+                                controls = (options[id].images[i].controls) ? '1' : '0';
+                                autoplay = (options[id].images[i].autoplay) ? '1' : '0';
+                                info = (options[id].images[i].info) ? '1' : '0';
+                                video = '<iframe class="FG_video" id="' + id + '_video_' + i + '" image="' + i + '" base="' + id + '" type="text/html" src="//www.youtube.com/embed/' + url + '?autoplay=' + autoplay + '&loop=' + loop + '&controls=' + controls + '&showinfo=' + info + '" frameborder="0" h="' + options[id].images[i].height + '" w="' + options[id].images[i].width + '" allowfullscreen>';
+                                $(options[id].base).append('<div class="FG_image" image="' + i + '" style="z-index:' + z + ';display:' + d + ';">' + video + ((options[id].images[i].content == undefined) ? '' : options[id].images[i].content) + '</div>');
+                        }
+                        else
+                        {
+                                $(options[id].base).append('<div class="FG_image" image="' + i + '" style="z-index:' + z + ';background-image:url(' + options[id].images[i].url + ');display:' + d + ';">' + ((options[id].images[i].content == undefined) ? '' : options[id].images[i].content) + '</div>');
+                        }
+
+                        //Set thumbs if option is true
 
                         if (options[id].mini != null)
                         {
                                 switch (options[id].mini)
                                 {
                                         case 'thumbnails':
-                                                thumbs += '<li class="FG_thumb_image ' + s + '" image="' + (i) + '" style="background-image:url(' + options[id].images[i].url + ');background-size:cover;background-position: center center;"></li>';
+                                                url = (options[id].images[i].type == 'video') ? '' : options[id].images[i].url;
+                                                if (options[id].images[i].type == 'video')
+                                                {
+
+                                                        video = document.getElementById(id + '_video_' + i);
+                                                        video.addEventListener('loadeddata', function() {
+                                                                video.currentTime = 10;
+                                                                generateVideoThumbnail(this);
+                                                        }, false);
+
+                                                        s += ' FG_thumb_video';
+                                                }
+                                                else if (options[id].images[i].type == 'youtube')
+                                                {
+                                                        url = 'http://img.youtube.com/vi/' + options[id].images[i].url + '/1.jpg';
+
+                                                        s += ' FG_thumb_video';
+                                                }
+
+                                                thumbs += '<li class="FG_thumb_image ' + s + '" image="' + (i) + '" style="background-image:url(' + url + ');background-size:cover;background-position: center center;"></li>';
                                                 break;
                                         case 'numbers':
                                                 thumbs += '<li class="FG_thumb_number ' + s + '" image="' + (i) + '" >' + (i + 1) + '</li>';
@@ -325,10 +438,11 @@
                 }
                 thumbs += '</ul>';
 
-                append = ((options[id].buttons) ? buttons : '') + ((options[id].mini !== false) ? thumbs : '');
+                append = ((options[id].buttons) ? buttons : '') + ((options[id].mini !== false) ? thumbs : '') + ((options[id].countdown.active !== false) ? countdown : '');
 
                 $(options[id].base).prepend(append);
 
+                //Set actions
                 $(_baseId[id] + ' > ul.FG_buttons > li.prev').click(function() {
                         $(options[id].base).FullGallery('prev');
                 });
@@ -348,15 +462,23 @@
                         }
                 });
 
+                //Save gallery statistics
                 options[id].actual = 0;
                 options[id].total = i - 1;
                 options[id].prev = i - 1;
                 options[id].next = 1;
                 log(options[id], id);
 
+                //On resize, resize videos
+                $(options[id].base).FullGallery('resize');
+                $(window).resize(function() {
+                        $(options[id].base).FullGallery('resize');
+                });
+
+                //If autoplay set true
                 if (options[id].autoplay) {
                         options[id].status = 1;
-
+                        cDown(id);
                         to[id] = setTimeout(function() {
                                 play(id);
                         }, options[id].time);
@@ -368,6 +490,7 @@
                 }
         }
 
+        //Stop the auto-slide
         var stop = function(id) {
                 options[id].status = 0;
                 clearTimeout(to[id]);
@@ -377,6 +500,7 @@
                 }
         }
 
+        //Play the autoslide
         var play = function(id) {
                 options[id].status = 1;
                 if (typeof options[id].callback.play == 'function')
@@ -386,6 +510,7 @@
                 animation(id, options[id].animation, 'n');
         }
 
+        //Go to the next slide
         var next = function(id) {
                 if (!$(_baseId[id] + ' > .FG_image').is(':animated'))
                 {
@@ -393,6 +518,8 @@
                         animation(id, 'n');
                 }
         }
+
+        //Go to the prev slide
         var prev = function(id) {
                 if (!$(_baseId[id] + ' > .FG_image').is(':animated'))
                 {
@@ -401,8 +528,9 @@
                 }
         }
 
+        //Animation function
         var animation = function(id, PoN) {
-
+                
                 if (options[id].total > 1)
                 {
                         if (typeof options[id].callback.animationStart == 'function')
@@ -450,6 +578,7 @@
                                 {
                                         sAc.callbacks.before('actual', _actual[id]);
                                 }
+                                resize(id);
                         }
                         if (sA.before.next != null) {
                                 $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').css(sA.before.next);
@@ -458,6 +587,7 @@
                                 {
                                         sAc.callbacks.before('next', _next[id]);
                                 }
+                                resize(id);
                         }
 
                         if (sA.actualImageTo != null) {
@@ -578,9 +708,18 @@
                         {
                                 options[id].callback.animationEnd();
                         }
+
+                        if ($(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').children('video').length > 0)
+                        {
+                                videoId = $(options[id].base).children('div.FG_image[image="' + _next[id] + '"]').children('video').attr('id');
+                                document.getElementById(videoId).play();
+                        }
+
+                        cDown(id);
                 }
         }
 
+        //Logging function
         var log = function(msg, id)
         {
                 if (options[id].debug)
@@ -589,6 +728,7 @@
                 }
         }
 
+        //Tab change function calback
         var visibilityChange = function(id) {
                 if (options[id].status != null)
                 {
@@ -611,6 +751,129 @@
                                 }
                         }
                 }
+        }
+
+        var cDown = function(id) {
+                if (options[id].countdown.active && options[id].autoplay && options[id].status == 1)
+                {
+                        if (typeof jQuery.ui !== 'undefined')
+                        {
+                                if (typeof options[id].countdown.style.start == 'string')
+                                {
+                                        $(options[id].base).children('.FG_countdown').children('div').addClass(options[id].countdown.style.end, options[id].time, function() {
+                                                $(this).removeClass(options[id].countdown.style.end);
+                                        });
+                                }
+                                else if (typeof options[id].countdown.style.start == 'object')
+                                {
+                                        $(options[id].base).children('.FG_countdown').children('div').animate(options[id].countdown.style.end, options[id].time, function() {
+                                                $(this).css(options[id].countdown.style.start)
+                                        });
+                                }
+                                else
+                                {
+                                        $(options[id].base).children('.FG_countdown').children('div').addClass('_100', options[id].time, function() {
+                                                $(this).removeClass('_100');
+                                        });
+                                }
+                        }
+                }
+        }
+
+        //Video resize function
+        var resize = function(id) {
+
+                $(options[id].base).children('div.FG_image').children('video').each(function() {
+
+                        h = $(options[id].base).height();
+                        w = $(options[id].base).width();
+
+                        o = (w > h) ? 'o' : 'v';
+                        r = (o != 'o') ? w / h : h / w;
+                        options[id].orientation = o;
+                        options[id].ratio = r;
+
+                        if (o == 'o')
+                        {
+                                vH = 'auto';
+                                vW = '100%';
+                                $(this).attr({height: vH, width: vW});
+                                if ($(this).height() <= h) {
+                                        vH = '100%';
+                                        vW = 'auto';
+                                }
+                        }
+                        else
+                        {
+                                vH = '100%';
+                                vW = 'auto';
+                                $(this).attr({height: vH, width: vW});
+                                if ($(this).width() <= w)
+                                {
+                                        vH = 'auto';
+                                        vW = '100%';
+                                }
+                        }
+
+                        $(this).attr({height: vH, width: vW});
+                });
+
+                $(options[id].base).children('div.FG_image').children('iframe').each(function() {
+
+                        hC = $(options[id].base).height();
+                        wC = $(options[id].base).width();
+
+                        oC = (wC > hC) ? 'o' : 'v';
+                        rC = (oC != 'o') ? wC / hC : hC / wC;
+                        options[id].orientation = oC;
+                        options[id].ratio = rC;
+
+                        h = $(this).attr('h');
+                        w = $(this).attr('w');
+
+                        o = (w > h) ? 'o' : 'v';
+                        r = (oC != 'o') ? w / h : h / w;
+
+                        if (oC == 'o')
+                        {
+                                vH = wC * r;
+                                vW = wC;
+                                $(this).attr({height: vH, width: vW});
+                                if ($(this).height() <= hC) {
+                                        r = w / h;
+                                        vH = hC;
+                                        vW = hC * r;
+                                }
+                        }
+                        else
+                        {
+                                vH = hC;
+                                vW = hC * r;
+                                $(this).attr({height: vH, width: vW});
+                                if ($(this).width() <= wC)
+                                {
+                                        vH = wC * r;
+                                        vW = wC;
+                                }
+                        }
+
+                        $(this).attr({height: vH, width: vW});
+                });
+        }
+
+        //Thumb generation for html5 video
+        var generateVideoThumbnail = function(videoID) {
+                thumb = $(videoID).attr('image');
+                id = $(videoID).attr('base');
+                canvas = document.createElement('canvas');
+                canvas.width = videoID.videoWidth;
+                canvas.height = videoID.videoHeight;
+
+                context = canvas.getContext('2d');
+                context.drawImage(videoID, 0, 0, videoID.videoWidth, videoID.videoHeight);
+
+                dataURL = canvas.toDataURL();
+                $(options[id].base).children('ul').children('li[image="' + thumb + '"]').css({background: 'url(' + dataURL + ')', 'background-size': 'cover'});
         }
 
 })(jQuery);
