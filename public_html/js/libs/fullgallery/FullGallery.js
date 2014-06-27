@@ -8,6 +8,7 @@
  * + Added background Youtube video
  * + Added thumb from video
  * + Added countdown element
+ * + Added preload option and functionality before starting slideshow
  * 
  * v1.1.1 (26/06/2014)
  * + Added numeric type in gallery thumbs
@@ -52,20 +53,12 @@
                         images: [],
                         status: null,
                         animation: 'fade',
-                        animationRunning: 0,
                         time: 6000,
-                        prev: null,
-                        next: null,
-                        actual: null,
-                        total: null,
-                        base: null,
-                        started: 0,
                         autoplay: false,
                         mini: false,
                         buttons: false,
                         resumePlay: true,
-                        orientation: null,
-                        ratio: null,
+                        preload: true,
                         countdown: {active: false,
                                 style: {
                                         start: '_0',
@@ -88,7 +81,18 @@
                                 tabBlur: function() {
                                 }
                         },
-                        debug: false
+                        debug: false,
+                        //Functional//
+                        prev: null,
+                        next: null,
+                        actual: null,
+                        total: null,
+                        totalImages: 0,
+                        loaded: 0,
+                        base: null,
+                        started: 0,
+                        orientation: null,
+                        ratio: null
                 }];
 
         var to = new Array();
@@ -396,6 +400,16 @@
                         }
                         else
                         {
+                                if (options[id].preload && options[id].autoplay)
+                                {
+                                        $('<img/>').attr('src', options[id].images[i].url).load(function() {
+                                                $(this).remove();
+                                                 log('Preload',id);
+                                                options[id].loaded++;
+                                                preload(id);
+                                        });
+                                }
+                                options[id].totalImages++;
                                 $(options[id].base).append('<div class="FG_image" image="' + i + '" style="z-index:' + z + ';background-image:url(' + options[id].images[i].url + ');display:' + d + ';">' + ((options[id].images[i].content == undefined) ? '' : options[id].images[i].content) + '</div>');
                         }
 
@@ -415,13 +429,11 @@
                                                                 video.currentTime = 10;
                                                                 generateVideoThumbnail(this);
                                                         }, false);
-
                                                         s += ' FG_thumb_video';
                                                 }
                                                 else if (options[id].images[i].type == 'youtube')
                                                 {
                                                         url = 'http://img.youtube.com/vi/' + options[id].images[i].url + '/1.jpg';
-
                                                         s += ' FG_thumb_video';
                                                 }
 
@@ -477,11 +489,16 @@
 
                 //If autoplay set true
                 if (options[id].autoplay) {
-                        options[id].status = 1;
-                        cDown(id);
-                        to[id] = setTimeout(function() {
-                                play(id);
-                        }, options[id].time);
+                        log('Autoplay',id);
+                        if (!options[id].preload)
+                        {
+                                log('No preload',id);
+                                options[id].status = 1;
+                                cDown(id);
+                                to[id] = setTimeout(function() {
+                                        play(id);
+                                }, options[id].time);
+                        }
                 }
 
                 if (typeof options[id].callback.init == 'function')
@@ -530,7 +547,7 @@
 
         //Animation function
         var animation = function(id, PoN) {
-                
+
                 if (options[id].total > 1)
                 {
                         if (typeof options[id].callback.animationStart == 'function')
@@ -777,6 +794,21 @@
                                         });
                                 }
                         }
+                        else
+                        {
+                                $(options[id].base).children('.FG_countdown').children('div').animate(options[id].countdown.style.end, options[id].time, function() {
+                                        $(this).css(options[id].countdown.style.start)
+                                });
+                        }
+                }
+        }
+
+        var preload = function(id) {
+                log(' ',id);
+                if (options[id].totalImages == options[id].loaded)
+                {
+                        log('Play',id);
+                        play(id);
                 }
         }
 
