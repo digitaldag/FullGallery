@@ -11,11 +11,15 @@
                         <div class="page">
                                 <div id="gallery2"></div>
                         </div>
+                        <div id='externalThumb' class=''>
+                                
+                        </div>
                 </div>
                 <script src="../js/libs/jquery/jquery.min.js" ></script>
                 <script src="../js/libs/jqueryui/jquery-ui.js"></script>
                 <script src="../js/libs/jquery-easing/jquery.easing.min.js" ></script>
                 <script src="../js/libs/fullgallery/FullGallery.js" ></script>
+                <script src="../js/libs/fullgallery/FullGallery.animations.js" ></script>
                 <!--script src="../js/libs/fullgallery/FullGallery.min.js" ></script-->
                 <script>
                         $(document).ready(function() {
@@ -29,6 +33,7 @@
                                         time: 5000,
                                         autoplay: true,
                                         preload:true,
+                                        animation:'fadeZoom',
                                         countdown: {active: true, style: {start: '_0', end: '_100'}}
                                 });
                                 $('#gallery2').FullGallery({images: [
@@ -41,8 +46,9 @@
                                                 {url: 'http://i.images.cdn.fotopedia.com/flickr-4545825554-hd/Photography_Techniques/Astrophotography/Hubble_Captures_Spectacular_Landscape_in_the_Carina_Nebula.jpg', content: '<h2>Gallery INCEPTION 2</h2><div id="gallery4"><ul><li style="background:url(http://upload.wikimedia.org/wikipedia/commons/e/e9/Sombrero_Galaxy_in_infrared_light_%28Hubble_Space_Telescope_and_Spitzer_Space_Telescope%29.jpg);"></li><li style="background:url(http://upload.wikimedia.org/wikipedia/commons/4/4d/Iss007e10807_darker.jpg);"></li><li style="background:url(http://upload.wikimedia.org/wikipedia/commons/8/80/NGC_2818_by_the_Hubble_Space_Telescope.jpg);"></li></ul></div>'}
                                         ],
                                         time: 6000,
-                                        animation: 'slide',
+                                        animation: 'slideDown',
                                         mini: 'thumbnails',
+                                        miniID: '#externalThumb',
                                         buttons: true,
                                         autoplay: true,
                                         preload:true,

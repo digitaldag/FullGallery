@@ -1,8 +1,13 @@
-/* FullGallery v1.1.2
+/* FullGallery v12
  * 
  * Responsive multi-Gallery with thumbinals, customizable transiction and content slideshow
  * 
  * Changelog
+ * v1.2 (30/06/2014)
+ * + Added external animation inclusion for more and/or custom animations
+ * + Added possibility to manage thumb in external place
+ * + Fixed countdown fails on manual slide change
+ * 
  * v1.1.2 (27/06/2014)
  * + Added background and slider html5 video
  * + Added background Youtube video
@@ -56,6 +61,7 @@
                         time: 6000,
                         autoplay: false,
                         mini: false,
+                        miniID: null,
                         buttons: false,
                         resumePlay: true,
                         preload: true,
@@ -191,9 +197,6 @@
                 }
                 else if (argL == 1 && typeof arguments[0] == 'object') {
                         opt = arguments[0];
-                }
-                else if (argL == 2 && arguments[0] == 'animations' && typeof arguments[1] == 'object') {
-                        animations = $.extend(arguments[1], animations);
                 }
                 else if (argL == 2 && typeof arguments[0] == 'string' && (typeof arguments[1] == 'object' || typeof arguments[1] == 'string')) {
                         opt = arguments[0];
@@ -335,7 +338,7 @@
                 }
 
                 //Set thumbs if setted
-                thumbs = '<ul class="' + thumbs_class + '">';
+                thumbs = '<ul class="' + thumbs_class + '" connection="' + id + '">';
                 for (i = 0; i < options[id].images.length; i++)
                 {
                         z = -3;
@@ -404,7 +407,7 @@
                                 {
                                         $('<img/>').attr('src', options[id].images[i].url).load(function() {
                                                 $(this).remove();
-                                                 log('Preload',id);
+                                                log('Preload', id);
                                                 options[id].loaded++;
                                                 preload(id);
                                         });
@@ -450,9 +453,42 @@
                 }
                 thumbs += '</ul>';
 
-                append = ((options[id].buttons) ? buttons : '') + ((options[id].mini !== false) ? thumbs : '') + ((options[id].countdown.active !== false) ? countdown : '');
+                append = ((options[id].buttons) ? buttons : '') + ((options[id].mini !== false && options[id].miniID == null) ? thumbs : '') + ((options[id].countdown.active !== false) ? countdown : '');
 
                 $(options[id].base).prepend(append);
+                if (options[id].mini !== false && options[id].miniID != null && $(options[id].miniID).length == 1)
+                {
+                        $(options[id].miniID).attr({connection: id});
+                        $(options[id].miniID).append(thumbs);
+
+                        that = this;
+
+                        $(options[id].miniID + ' > ul.FG_mini > li').click(function() {
+                                if (!$($(options[id].miniID).attr('connection') + ' > .FG_image').is(':animated'))
+                                {
+                                        log('No animation, start animating', id);
+                                        img = $(this).attr('image') * 1;
+                                        img = (img >= options[id].images.length) ? 0 : img;
+                                        img = (img < 0) ? options[id].images.length - 1 : img;
+                                        $('#' + $(options[id].miniID).attr('connection')).FullGallery(img);
+                                }
+                        });
+                }
+                else
+                {
+                        $(_baseId[id] + ' > ul.FG_mini > li').click(function() {
+                                if (!$(_baseId[id] + ' > .FG_image').is(':animated'))
+                                {
+                                        log('No animation, start animating', id);
+                                        img = $(this).attr('image') * 1;
+                                        img = (img >= options[id].images.length) ? 0 : img;
+                                        img = (img < 0) ? options[id].images.length - 1 : img;
+
+                                        $(options[id].base).FullGallery(img);
+                                }
+                        });
+                }
+
 
                 //Set actions
                 $(_baseId[id] + ' > ul.FG_buttons > li.prev').click(function() {
@@ -462,17 +498,7 @@
                         $(options[id].base).FullGallery('next');
                 });
 
-                $(_baseId[id] + ' > ul.FG_mini > li').click(function() {
-                        if (!$(_baseId[id] + ' > .FG_image').is(':animated'))
-                        {
-                                log('No animation, start animating', id);
-                                img = $(this).attr('image') * 1;
-                                img = (img >= options[id].images.length) ? 0 : img;
-                                img = (img < 0) ? options[id].images.length - 1 : img;
 
-                                $(options[id].base).FullGallery(img);
-                        }
-                });
 
                 //Save gallery statistics
                 options[id].actual = 0;
@@ -489,12 +515,12 @@
 
                 //If autoplay set true
                 if (options[id].autoplay) {
-                        log('Autoplay',id);
+                        log('Autoplay', id);
                         if (!options[id].preload)
                         {
-                                log('No preload',id);
+                                log('No preload', id);
                                 options[id].status = 1;
-                                cDown(id);
+                                cDown(id, true);
                                 to[id] = setTimeout(function() {
                                         play(id);
                                 }, options[id].time);
@@ -667,7 +693,9 @@
                                                 {
                                                         sAc.callbacks.after('next', _next[id]);
                                                 }
+                                                resize(id);
                                         });
+                                        resize(id);
                                         log('Next animation end', id);
 
                                         $(options[id].base).children('div.FG_image').removeClass('actual');
@@ -693,7 +721,9 @@
                                                 {
                                                         sAc.callbacks.after('next', _next[id]);
                                                 }
+                                                resize(id);
                                         });
+                                        resize(id);
                                         log('Next animation end', id);
 
                                         $(options[id].base).children('div.FG_image').removeClass('actual');
@@ -706,14 +736,15 @@
                         if (typeof jQuery.ui !== 'undefined')
                         {
                                 time = (sA.actualImageTo != null && sA.nextImageTo != null) ? sA.actualImageTo.time * 1 + sA.nextImageTo.time * 1 : 1000;
-
-                                $(options[id].base).children('.FG_mini').children('li').removeClass('FG_thumb_list_actual', time);
-                                $(options[id].base).children('.FG_mini').children('li[image="' + _next[id] + '"]').addClass('FG_thumb_list_actual', time);
+                                base = (options[id].miniID != null) ? options[id].miniID : options[id].base;
+                                $(base).children('.FG_mini').children('li').removeClass('FG_thumb_list_actual', time);
+                                $(base).children('.FG_mini').children('li[image="' + _next[id] + '"]').addClass('FG_thumb_list_actual', time);
                         }
                         else
                         {
-                                $(options[id].base).children('.FG_mini').children('li').removeClass('FG_thumb_list_actual');
-                                $(options[id].base).children('.FG_mini').children('li[image="' + _next[id] + '"]').addClass('FG_thumb_list_actual');
+                                base = (options[id].miniID != null) ? options[id].miniID : options[id].base;
+                                $(base).children('.FG_mini').children('li').removeClass('FG_thumb_list_actual');
+                                $(base).children('.FG_mini').children('li[image="' + _next[id] + '"]').addClass('FG_thumb_list_actual');
                         }
                         if (options[id].status == 1) {
                                 to[id] = setTimeout(function() {
@@ -732,7 +763,7 @@
                                 document.getElementById(videoId).play();
                         }
 
-                        cDown(id);
+                        cDown(id, true);
                 }
         }
 
@@ -770,9 +801,15 @@
                 }
         }
 
-        var cDown = function(id) {
+        //Countdown graphic manager
+        var cDown = function(id, r) {
                 if (options[id].countdown.active && options[id].autoplay && options[id].status == 1)
                 {
+                        if (r)
+                        {
+                                $(options[id].base).children('.FG_countdown').children('div').stop(true, true);
+                        }
+
                         if (typeof jQuery.ui !== 'undefined')
                         {
                                 if (typeof options[id].countdown.style.start == 'string')
@@ -784,7 +821,7 @@
                                 else if (typeof options[id].countdown.style.start == 'object')
                                 {
                                         $(options[id].base).children('.FG_countdown').children('div').animate(options[id].countdown.style.end, options[id].time, function() {
-                                                $(this).css(options[id].countdown.style.start)
+                                                $(this).css(options[id].countdown.style.start);
                                         });
                                 }
                                 else
@@ -797,17 +834,19 @@
                         else
                         {
                                 $(options[id].base).children('.FG_countdown').children('div').animate(options[id].countdown.style.end, options[id].time, function() {
-                                        $(this).css(options[id].countdown.style.start)
+                                        $(this).css(options[id].countdown.style.start);
                                 });
                         }
+
                 }
         }
 
+        //Wait all images to load before play the slideshow
         var preload = function(id) {
-                log(' ',id);
+                log(' ', id);
                 if (options[id].totalImages == options[id].loaded)
                 {
-                        log('Play',id);
+                        log('Play', id);
                         play(id);
                 }
         }
@@ -905,7 +944,14 @@
                 context.drawImage(videoID, 0, 0, videoID.videoWidth, videoID.videoHeight);
 
                 dataURL = canvas.toDataURL();
-                $(options[id].base).children('ul').children('li[image="' + thumb + '"]').css({background: 'url(' + dataURL + ')', 'background-size': 'cover'});
+                base = (options[id].miniID != null) ? options[id].miniID : options[id].base;
+                $(base).children('ul').children('li[image="' + thumb + '"]').css({background: 'url(' + dataURL + ')', 'background-size': 'cover'});
+        }
+
+        //Extends actual animation object
+        $.fn.FullGalleryAnimations = function(animationsLoaded)
+        {
+                animations = $.extend(animationsLoaded, animations);
         }
 
 })(jQuery);
