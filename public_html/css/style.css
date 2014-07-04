@@ -31,7 +31,6 @@ html,body{height:100%; width:100%;margin:0;padding:0;}
         margin-left: 10%;
         margin-right: 10%;
         background-color: #fff;
-        opacity: 0.8;
         position: relative;
 }
 
@@ -79,4 +78,14 @@ html,body{height:100%; width:100%;margin:0;padding:0;}
         top: 0;
         width: 25%;
         z-index: 0;
+}
+
+#backgroundVideoControls{
+        display: block;
+        height: 40%;
+        right: 0;
+        position: absolute;
+        top: 0;
+        width: 25%;
+        z-index: 1;
 }

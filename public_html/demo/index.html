@@ -7,12 +7,13 @@
         <body>
                 <div id='gallery' class='background'></div>
                 <div id='logo'></div>
+                <div id='backgroundVideoControls'></div>
                 <div class="container">
                         <div class="page">
                                 <div id="gallery2"></div>
                         </div>
                         <div id='externalThumb' class=''>
-                                
+
                         </div>
                 </div>
                 <script src="../js/libs/jquery/jquery.min.js" ></script>
@@ -20,43 +21,40 @@
                 <script src="../js/libs/jquery-easing/jquery.easing.min.js" ></script>
                 <script src="../js/libs/fullgallery/FullGallery.js" ></script>
                 <script src="../js/libs/fullgallery/FullGallery.animations.js" ></script>
-                <!--script src="../js/libs/fullgallery/FullGallery.min.js" ></script-->
+
                 <script>
                         $(document).ready(function() {
-                                $('#gallery').FullGallery({images: [
-                                                {url: 'http://i.images.cdn.fotopedia.com/flickr-4545825554-hd/Photography_Techniques/Astrophotography/Hubble_Captures_Spectacular_Landscape_in_the_Carina_Nebula.jpg'},
-                                                {url: '../video/small.ogv', type: 'video'},
-                                                {url: 'http://i.images.cdn.fotopedia.com/flickr-4504910807-hd/Photography_Techniques/Astrophotography/Hubble_Snaps_Heavyweight_of_the_Leo_Triplet.jpg'},
-                                                {url: 'http://images.cdn.fotopedia.com/flickr-6987173182-hd.png'},
-                                                {url: 'http://images.cdn.fotopedia.com/flickr-5014452663-hd.jpg'}
+
+                                $('#gallery').FullGallery({
+                                        images: [
+                                                {url: '6v2L2UGZJAM', type: 'youtube', muted: true, annotations: false, loop: false, customControls: '#backgroundVideoControls', controls: false, autoplay: true, info: false, height: 315, width: 560, adaptTime: true},
+                                                {url: 'https://farm4.staticflickr.com/3734/8997118643_6c1132c603_h.jpg'},
+                                                {url: 'https://farm6.staticflickr.com/5454/8998769755_5ecf7b55fb_h.jpg'},
+                                                {url: 'P5_GlAOCHyE', type: 'youtube', annotations: false, loop: false, controls: false, autoplay: true, info: false, height: 315, width: 560, adaptTime: true},
+                                                {url: 'https://farm4.staticflickr.com/3743/9060998433_fe3cbdde6b_h.jpg'}
+
                                         ],
-                                        time: 5000,
+                                        time: 10000,
                                         autoplay: true,
-                                        preload:true,
-                                        animation:'fadeZoom',
+                                        preload: true,
+                                        debug: true,
                                         countdown: {active: true, style: {start: '_0', end: '_100'}}
                                 });
+
                                 $('#gallery2').FullGallery({images: [
-                                                {url: 'http://images.cdn.fotopedia.com/flickr-7796856900-hd.jpg'},
-                                                {url: '../video/small.ogv', type: 'video', loop: true, controls: true, autoplay: false},
-                                                {url: 'https://www.youtube.com/embed/TCL94-MsxYc', type: 'youtube', loop: true, controls: false, autoplay: false, info: false, height: 315, width: 560},
-                                                {url: 'http://images.cdn.fotopedia.com/flickr-6987173182-hd.png'},
-                                                {url: 'http://i.images.cdn.fotopedia.com/flickr-4504910807-hd/Photography_Techniques/Astrophotography/Hubble_Snaps_Heavyweight_of_the_Leo_Triplet.jpg', content: '<h2>Content slider</h2><div><p>Some funny text!<p><p>With <a href="#">links</a>!</p><p>Controlling other <a href="javascript:$(\'#gallery\').FullGallery(\'next\');">gallery</a></p></div>'},
-                                                {url: 'http://images.cdn.fotopedia.com/flickr-5014452663-hd.jpg', content: '<h2>Gallery INCEPTION</h2><div id="gallery3"><ul><li style="background:url(http://upload.wikimedia.org/wikipedia/commons/e/e9/Sombrero_Galaxy_in_infrared_light_%28Hubble_Space_Telescope_and_Spitzer_Space_Telescope%29.jpg);"></li><li style="background:url(http://upload.wikimedia.org/wikipedia/commons/4/4d/Iss007e10807_darker.jpg);"></li><li style="background:url(http://upload.wikimedia.org/wikipedia/commons/8/80/NGC_2818_by_the_Hubble_Space_Telescope.jpg);"></li></ul></div>'},
-                                                {url: 'http://i.images.cdn.fotopedia.com/flickr-4545825554-hd/Photography_Techniques/Astrophotography/Hubble_Captures_Spectacular_Landscape_in_the_Carina_Nebula.jpg', content: '<h2>Gallery INCEPTION 2</h2><div id="gallery4"><ul><li style="background:url(http://upload.wikimedia.org/wikipedia/commons/e/e9/Sombrero_Galaxy_in_infrared_light_%28Hubble_Space_Telescope_and_Spitzer_Space_Telescope%29.jpg);"></li><li style="background:url(http://upload.wikimedia.org/wikipedia/commons/4/4d/Iss007e10807_darker.jpg);"></li><li style="background:url(http://upload.wikimedia.org/wikipedia/commons/8/80/NGC_2818_by_the_Hubble_Space_Telescope.jpg);"></li></ul></div>'}
-                                        ],
+                                                {url: 'https://farm4.staticflickr.com/3734/8997118643_6c1132c603_h.jpg'},
+                                                {url: 'https://farm6.staticflickr.com/5454/8998769755_5ecf7b55fb_h.jpg'}, 
+                                                {url: 'https://farm4.staticflickr.com/3743/9060998433_fe3cbdde6b_h.jpg'},
+                                                {url:'https://farm6.staticflickr.com/5346/9237038568_f3fff6540f_h.jpg'},
+                                                {url:'https://farm8.staticflickr.com/7434/9234210773_d2ecfd84c1_h.jpg'}
+                        ],
                                         time: 6000,
                                         animation: 'slideDown',
                                         mini: 'thumbnails',
-                                        miniID: '#externalThumb',
                                         buttons: true,
                                         autoplay: true,
-                                        preload:true,
-                                        countdown: {active: true, style: {start: '_0', end: '_100'}},
-                                        callback: {init: function() {
-                                                        $('#gallery3').FullGallery({autoplay: true, mini: 'numbers'});
-                                                        $('#gallery4').FullGallery({autoplay: true, mini: 'buttons'});
-                                                }}
+                                        preload: true,
+                                        countdown: {active: true, style: {start: '_0', end: '_100'}}
                                 });
                         });
                 </script>
