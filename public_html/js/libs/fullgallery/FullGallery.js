@@ -3,6 +3,9 @@
  * Responsive multi-Gallery with thumbinals, customizable transiction and content slideshow
  * 
  * Changelog
+ * v1.2.2 (10/07/2014)
+ * + FIX, if element target not exists ignore all the script
+ * 
  * v1.2.1 (04/07/2014)
  * + Rewrited youtube and video management
  * + Added "start" & "end" options to youtube and video
@@ -192,86 +195,89 @@
 //Starter
         $.fn.FullGallery = function()
         {
-                argL = arguments.length;
-                var that = this;
-                var callback = false;
-                var id = $(this).attr('id');
-                id = (id == '' || id == undefined) ? 'FG' + Math.round(Math.random() * 10000000) : id;
-                $(this).attr({'id': id});
-                if (argL == 0) {
-                        options[id] = options[0];
-                }
-                else if (argL == 1 && typeof arguments[0] == 'object') {
-                        opt = arguments[0];
-                }
-                else if (argL == 2 && typeof arguments[0] == 'string' && (typeof arguments[1] == 'object' || typeof arguments[1] == 'string')) {
-                        opt = arguments[0];
-                        optv = arguments[1];
-                }
-                else if (argL == 1 && typeof arguments[0] == 'string') {
+                if ($(this).length > 0)
+                {
+                        argL = arguments.length;
+                        var that = this;
+                        var callback = false;
+                        var id = $(this).attr('id');
+                        id = (id == '' || id == undefined) ? 'FG' + Math.round(Math.random() * 10000000) : id;
+                        $(this).attr({'id': id});
+                        if (argL == 0) {
+                                options[id] = options[0];
+                        }
+                        else if (argL == 1 && typeof arguments[0] == 'object') {
+                                opt = arguments[0];
+                        }
+                        else if (argL == 2 && typeof arguments[0] == 'string' && (typeof arguments[1] == 'object' || typeof arguments[1] == 'string')) {
+                                opt = arguments[0];
+                                optv = arguments[1];
+                        }
+                        else if (argL == 1 && typeof arguments[0] == 'string') {
 
-                        switch (arguments[0])
-                        {
-                                case 'play':
-                                        callback = play;
-                                        break;
-                                case 'stop':
-                                        callback = stop;
-                                        break;
-                                case 'next':
-                                        callback = next;
-                                        break;
-                                case 'prev':
-                                        callback = prev;
-                                        break;
-                                case 'resize':
-                                        callback = resize;
-                                        break;
-                        }
-                }
-                else if (argL == 1 && typeof arguments[0] == 'number')
-                {
-                        callback = parseInt(arguments[0] * 1);
-                        if (options[id].images[callback] != undefined && callback != options[id].actual)
-                        {
-                                clearTimeout(to[id]);
-                                options[id].actual = options[id].actual;
-                                options[id].prev = (callback < 0) ? options[id].total - 1 : callback;
-                                options[id].next = callback;
-                                effect = (options[id].next > options[id].actual) ? 'n' : 'p';
-                                animation(id, effect);
-                        }
-                }
-
-                if (callback)
-                {
-                        if (typeof callback == 'function')
-                        {
-                                callback(id);
-                        }
-                }
-                else
-                {
-                        if (typeof opt == 'object')
-                        {
-                                if (typeof options[id] == 'object')
+                                switch (arguments[0])
                                 {
-                                        options[id] = $.extend({}, options[id], opt);
-                                }
-                                else
-                                {
-                                        options[id] = $.extend({}, options[0], opt);
+                                        case 'play':
+                                                callback = play;
+                                                break;
+                                        case 'stop':
+                                                callback = stop;
+                                                break;
+                                        case 'next':
+                                                callback = next;
+                                                break;
+                                        case 'prev':
+                                                callback = prev;
+                                                break;
+                                        case 'resize':
+                                                callback = resize;
+                                                break;
                                 }
                         }
-                        if (typeof opt == 'string')
+                        else if (argL == 1 && typeof arguments[0] == 'number')
                         {
-                                options[id][opt] = optv;
+                                callback = parseInt(arguments[0] * 1);
+                                if (options[id].images[callback] != undefined && callback != options[id].actual)
+                                {
+                                        clearTimeout(to[id]);
+                                        options[id].actual = options[id].actual;
+                                        options[id].prev = (callback < 0) ? options[id].total - 1 : callback;
+                                        options[id].next = callback;
+                                        effect = (options[id].next > options[id].actual) ? 'n' : 'p';
+                                        animation(id, effect);
+                                }
                         }
-                        options[id].base = this;
-                        if (options[id].started == 0) {
-                                init(id);
+
+                        if (callback)
+                        {
+                                if (typeof callback == 'function')
+                                {
+                                        callback(id);
+                                }
                         }
-                        options[id].started = 1;
+                        else
+                        {
+                                if (typeof opt == 'object')
+                                {
+                                        if (typeof options[id] == 'object')
+                                        {
+                                                options[id] = $.extend({}, options[id], opt);
+                                        }
+                                        else
+                                        {
+                                                options[id] = $.extend({}, options[0], opt);
+                                        }
+                                }
+                                if (typeof opt == 'string')
+                                {
+                                        options[id][opt] = optv;
+                                }
+                                options[id].base = this;
+                                if (options[id].started == 0) {
+                                        init(id);
+                                }
+                                options[id].started = 1;
+                        }
                 }
         }
 
@@ -688,8 +694,8 @@
                         }
                         if (options[id].images[_next[id]].type == 'video')
                         {
-                                document.getElementById(id + '_video_' +  _next[id]).play();
-                                document.getElementById(id + '_video_' +  _next[id]).onended = function() {
+                                document.getElementById(id + '_video_' + _next[id]).play();
+                                document.getElementById(id + '_video_' + _next[id]).onended = function() {
                                         if (options[id].status == 1) {
                                                 $(options[id].base).FullGallery('next');
                                         }
