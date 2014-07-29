@@ -1,8 +1,10 @@
-/* FullGallery v1.2.1
+/* FullGallery v1.2.3
  * 
  * Responsive multi-Gallery with thumbinals, customizable transiction and content slideshow
  * 
  * Changelog
+ * v1.2.3
+ * + Added pause to the video controls
  * v1.2.2 (10/07/2014)
  * + FIX, if element target not exists ignore all the script
  * 
@@ -441,7 +443,7 @@
 
                                 video = '<div videoID="' + url + '" class="FG_video" id="' + id + '_video_' + i + '" image="' + i + '" base="' + id + '" h="' + options[id].images[i].height + '" w="' + options[id].images[i].width + '" allowfullscreen></div>';
 
-                                customControls = '<div style="display:' + d + ';" class="FG_video_controls"><ul><li class="play"></li><li class="stop"></li><li class="restart"></li><li class="fadein"></li><li class="fadeout"></li><li class="mute"></li><li class="unmute"></li></ul></div>';
+                                customControls = '<div style="display:' + d + ';" class="FG_video_controls"><ul><li class="play"></li><li class="pause"></li><li class="stop"></li><li class="restart"></li><li class="fadein"></li><li class="fadeout"></li><li class="mute"></li><li class="unmute"></li></ul></div>';
 
                                 $(options[id].base).append('<div class="FG_image" video="true" image="' + i + '" style="z-index:' + z + ';display:' + d + ';">' + video + ((options[id].images[i].content == undefined) ? '' : options[id].images[i].content) + ((options[id].images[i].customControls == true) ? customControls : '') + '</div>');
 
@@ -1100,6 +1102,16 @@
                                 if (options[id].images[options[id].actual].type == 'youtube')
                                 {
                                         FG_video[id + '_video_' + options[id].actual].stopVideo();
+                                }
+                                else
+                                {
+                                        document.getElementById(id + '_video_' + options[id].actual).pause();
+                                }
+                                break;
+                        case 'pause':
+                                if (options[id].images[options[id].actual].type == 'youtube')
+                                {
+                                        FG_video[id + '_video_' + options[id].actual].pauseVideo();
                                 }
                                 else
                                 {
