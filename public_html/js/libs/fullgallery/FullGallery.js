@@ -1,10 +1,16 @@
-/* FullGallery v1.2.3
+/* FullGallery v1.3
  * 
  * Responsive multi-Gallery with thumbinals, customizable transiction and content slideshow
  * 
  * Changelog
- * v1.2.3
+ * v1.3 (05/08/2014)
+ * + Added keydown support (up/left, down/right and p) to move back, forward and stop the image slider
+ * + Added image/video copyright message
+ * + Added TabBlur/Focus video control to allow automated pause if the tab loose focus and play when get back
+ * 
+ * v1.2.3 (29/07/2014)
  * + Added pause to the video controls
+ * 
  * v1.2.2 (10/07/2014)
  * + FIX, if element target not exists ignore all the script
  * 
@@ -76,6 +82,7 @@
                         buttons: false,
                         resumePlay: true,
                         preload: true,
+                        bindKeys: false,
                         volumeFadeSpeed: 30,
                         countdown: {active: false,
                                 style: {
@@ -120,6 +127,8 @@
         window.FG_video_data = {};
         window.FG_video_loaded = false;
         $.getScript('//www.youtube.com/iframe_api');
+        var scriptData = {name: 'FullGallery', version: '1.3', lastUpdate: '2014-08-05', authors: [{name: 'digitaldag', contacts: 'mailto:digitald@big-d-web.com'}], url: 'https://github.com/digitaldag/FullGallery'};
+
         //Animation samples
         var animations = {
                 fade: {
@@ -320,6 +329,52 @@
                         });
                 }
                 $(options[id].base).empty();
+
+                //Bind left/right && up/down key down event to gallery change
+                enVars.keyDown = {};
+                $(document).keydown(function(e) {
+                        enVars.keyDown[e.key] = true;
+                        if (options[id].bindKeys != false) {
+                                if (e.key == 'Up' || e.key == 'Left') {
+                                        e.preventDefault();
+                                        $(options[id].base).FullGallery('prev');
+                                }
+                                else if (e.key == 'Down' || e.key == 'Right') {
+                                        e.preventDefault();
+                                        $(options[id].base).FullGallery('next');
+                                }
+                                else if (e.key == 'p' || e.key == 'P') {
+                                        if (options[id].status == 1) {
+                                                $(options[id].base).FullGallery('stop');
+                                        }
+                                        else if (options[id].status == 0) {
+                                                $(options[id].base).FullGallery('play');
+                                        }
+                                }
+                        }
+                        if (enVars.keyDown['Control'] && enVars.keyDown['Down']) {
+                                e.preventDefault();
+                                s = scriptData;
+                                authors = '';
+                                for (i = 0; i < s.authors.length; i++) {
+                                        authors += '<a href="' + s.authors[i].contacts + '">' + s.authors[i].name + '</a>';
+                                        if (s.authors.length != i - 1) {
+                                                authors += ', ';
+                                        }
+                                }
+                                $('.sc').html('<p><a href="' + s.url + '">' + s.name + '</a> (' + s.version + ') made with love by ' + authors + '</p>').fadeIn();
+                                log(s.name + ' (' + s.version + ') made with love by ' + authors, id);
+
+                        }
+                        if (enVars.keyDown['Esc']) {
+                                $('.sc').fadeOut();
+                        }
+                        log('Key pressed: ' + e.key, id);
+                });
+                $(document).keyup(function(e) {
+                        enVars.keyDown[e.key] = false;
+                });
+
                 //Check what kind of mini-gallery is setted
                 switch (options[id].mini)
                 {
@@ -360,6 +415,10 @@
                         }
 
 //Set slides
+                        options[id].images[i].copyright = options[id].images[i].copyright || {link: '', name: ''};
+                        copyright = '&copy; ' + ((options[id].images[i].copyright.link != '' && options[id].images[i].copyright.link != undefined) ? '<a target="_blank" href=\"' + options[id].images[i].copyright.link + '\" title="' + options[id].images[i].copyright.name + '">' : '') + options[id].images[i].copyright.name + ((options[id].images[i].copyright.link != '' && options[id].images[i].copyright.link != undefined) ? '</a>' : '');
+                        copyright_show = (options[id].images[i].copyright.link != '' || options[id].images[i].copyright.name != '') ? 'block' : 'none';
+
                         if (options[id].images[i].type == 'video')
                         {
                                 loop = (options[id].images[i].loop) ? 'loop' : '';
@@ -382,7 +441,7 @@
                                 video += '</video>';
 
                                 customControls = '<div style="display:' + d + ';" class="FG_video_controls"><ul><li class="play"></li><li class="stop"></li><li class="restart"></li><li class="fadein"></li><li class="fadeout"></li><li class="mute"></li><li class="unmute"></li></ul></div>';
-                                $(options[id].base).append('<div video="true" class="FG_image" image="' + i + '" style="z-index:' + z + ';display:' + d + ';">' + video + ((options[id].images[i].content == undefined) ? '' : options[id].images[i].content) + ((options[id].images[i].customControls == true) ? customControls : '') + '</div>');
+                                $(options[id].base).append('<div video="true" class="FG_image" image="' + i + '" style="z-index:' + z + ';display:' + d + ';">' + video + ((options[id].images[i].content == undefined) ? '' : options[id].images[i].content) + ((options[id].images[i].customControls == true) ? customControls : '') + '<div class="sc" style="display:none;position:absolute;top:5px;right:0;font-size:9px;background:#fff;color;#000;"></div><div class="copyright" style="display:' + copyright_show + ';">' + copyright + '</div></div>');
 
                                 if (i == 0) {
                                         document.getElementById(id + '_video_' + i).onended = function() {
@@ -444,8 +503,7 @@
                                 video = '<div videoID="' + url + '" class="FG_video" id="' + id + '_video_' + i + '" image="' + i + '" base="' + id + '" h="' + options[id].images[i].height + '" w="' + options[id].images[i].width + '" allowfullscreen></div>';
 
                                 customControls = '<div style="display:' + d + ';" class="FG_video_controls"><ul><li class="play"></li><li class="pause"></li><li class="stop"></li><li class="restart"></li><li class="fadein"></li><li class="fadeout"></li><li class="mute"></li><li class="unmute"></li></ul></div>';
-
-                                $(options[id].base).append('<div class="FG_image" video="true" image="' + i + '" style="z-index:' + z + ';display:' + d + ';">' + video + ((options[id].images[i].content == undefined) ? '' : options[id].images[i].content) + ((options[id].images[i].customControls == true) ? customControls : '') + '</div>');
+                                $(options[id].base).append('<div class="FG_image" video="true" image="' + i + '" style="z-index:' + z + ';display:' + d + ';">' + video + ((options[id].images[i].content == undefined) ? '' : options[id].images[i].content) + ((options[id].images[i].customControls == true) ? customControls : '') + '<div class="sc" style="display:none;position:absolute;top:5px;right:0;font-size:9px;background:#fff;color;#000;"></div><div class="copyright" style="display:' + copyright_show + ';">' + copyright + '</div></div>');
 
                                 if (options[id].images[i].customControls != undefined && options[id].images[i].customControls != true && options[id].images[i].customControls != false)
                                 {
@@ -475,7 +533,8 @@
                                         });
                                 }
                                 options[id].totalImages++;
-                                $(options[id].base).append('<div class="FG_image" image="' + i + '" style="z-index:' + z + ';background-image:url(' + options[id].images[i].url + ');display:' + d + ';">' + ((options[id].images[i].content == undefined) ? '' : options[id].images[i].content) + '</div>');
+
+                                $(options[id].base).append('<div class="FG_image" image="' + i + '" style="z-index:' + z + ';background-image:url(' + options[id].images[i].url + ');display:' + d + ';">' + ((options[id].images[i].content == undefined) ? '' : options[id].images[i].content) + '<div class="sc" style="display:none;position:absolute;top:5px;right:0;font-size:9px;background:#fff;color;#000;"></div><div class="copyright" style="display:' + copyright_show + ';">' + copyright + '</div></div>');
                         }
 
 //Set thumbs if option is true
@@ -607,10 +666,12 @@
         var stop = function(id) {
                 options[id].status = 0;
                 clearTimeout(to[id]);
+                cDown(id, 'stop');
                 if (typeof options[id].callback.stop == 'function')
                 {
                         options[id].callback.stop();
                 }
+                log('Stop', id);
         }
 
 //Play the autoslide
@@ -632,6 +693,7 @@
                 {
                         animation(id, options[id].animation, 'n');
                 }
+                log('Play', id);
         }
 
 //Go to the next slide
@@ -640,6 +702,7 @@
                 {
                         clearTimeout(to[id]);
                         animation(id, 'n');
+                        log('Next', id);
                 }
         }
 
@@ -649,6 +712,7 @@
                 {
                         clearTimeout(to[id]);
                         animation(id, 'p');
+                        log('Prev', id);
                 }
         }
 
@@ -922,6 +986,13 @@
                                         options[id].callback.tabFocus();
                                 }
                         }
+
+                        if (document[enVars.visibilityValue] && options[id].images[options[id].actual].stopOnTabBlur) {
+                                $(options[id].base).FullGalleryVideoManager('pause');
+                        }
+                        if(!document[enVars.visibilityValue] && options[id].images[options[id].actual].resumeOnTabFocus){
+                                $(options[id].base).FullGalleryVideoManager('play');
+                        }
                 }
         }
 
@@ -930,39 +1001,46 @@
                 time = (time * 1 > 0) ? time : options[id].time;
                 if (options[id].countdown.active && options[id].autoplay && options[id].status == 1)
                 {
-                        if (r)
-                        {
-                                $(options[id].base).children('.FG_countdown').children('div').stop(true, true);
-                        }
-
-                        if (typeof jQuery.ui !== 'undefined')
-                        {
-                                if (typeof options[id].countdown.style.start == 'string')
+                        if (r != 'stop') {
+                                if (r == true)
                                 {
-                                        $(options[id].base).children('.FG_countdown').children('div').addClass(options[id].countdown.style.end, time, function() {
-                                                $(this).removeClass(options[id].countdown.style.end);
-                                        });
+                                        $(options[id].base).children('.FG_countdown').children('div').stop(true, true);
                                 }
-                                else if (typeof options[id].countdown.style.start == 'object')
+
+                                if (typeof jQuery.ui !== 'undefined')
+                                {
+                                        if (typeof options[id].countdown.style.start == 'string')
+                                        {
+                                                $(options[id].base).children('.FG_countdown').children('div').addClass(options[id].countdown.style.end, time, function() {
+                                                        $(this).removeClass(options[id].countdown.style.end);
+                                                });
+                                        }
+                                        else if (typeof options[id].countdown.style.start == 'object')
+                                        {
+                                                $(options[id].base).children('.FG_countdown').children('div').animate(options[id].countdown.style.end, time, function() {
+                                                        $(this).css(options[id].countdown.style.start);
+                                                });
+                                        }
+                                        else
+                                        {
+                                                $(options[id].base).children('.FG_countdown').children('div').addClass('_100', time, function() {
+                                                        $(this).removeClass('_100');
+                                                });
+                                        }
+                                }
+                                else
                                 {
                                         $(options[id].base).children('.FG_countdown').children('div').animate(options[id].countdown.style.end, time, function() {
                                                 $(this).css(options[id].countdown.style.start);
                                         });
                                 }
-                                else
-                                {
-                                        $(options[id].base).children('.FG_countdown').children('div').addClass('_100', time, function() {
-                                                $(this).removeClass('_100');
-                                        });
-                                }
                         }
-                        else
-                        {
-                                $(options[id].base).children('.FG_countdown').children('div').animate(options[id].countdown.style.end, time, function() {
-                                        $(this).css(options[id].countdown.style.start);
-                                });
+                        else {
+                                $(options[id].base).children('.FG_countdown').children('div').stop(true, true);
                         }
-
+                }
+                else {
+                        $(options[id].base).children('.FG_countdown').children('div').stop(true, true);
                 }
         }
 

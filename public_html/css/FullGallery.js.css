@@ -8,6 +8,13 @@
         height:100%;
 }
 
+.FG_image > .copyright{
+        position:absolute;
+        bottom:0px;
+        right: 0px;
+        font-size: 11px;
+}
+
 .FG_button_list{
         bottom: 0;
         height: 20px;

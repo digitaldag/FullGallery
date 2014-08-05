@@ -27,7 +27,7 @@
 
                                 $('#gallery').FullGallery({
                                         images: [
-                                                {url: '6v2L2UGZJAM', type: 'youtube', muted: true, annotations: false, loop: false, customControls: '#backgroundVideoControls', controls: false, autoplay: true, info: false, height: 315, width: 560, adaptTime: true},
+                                                {url: '6v2L2UGZJAM', type: 'youtube', muted: true, annotations: false, loop: false, customControls: '#backgroundVideoControls', controls: false, autoplay: true, info: false, height: 315, width: 560, adaptTime: true,stopOnTabBlur:true,resumeOnTabFocus:true},
                                                 {url: 'https://farm4.staticflickr.com/3734/8997118643_6c1132c603_h.jpg'},
                                                 {url: 'https://farm6.staticflickr.com/5454/8998769755_5ecf7b55fb_h.jpg'},
                                                 {url: 'P5_GlAOCHyE', type: 'youtube', annotations: false, loop: false, controls: false, autoplay: true, info: false, height: 315, width: 560, adaptTime: true},
@@ -42,11 +42,12 @@
                                 });
 
                                 $('#gallery2').FullGallery({images: [
-                                                {url: 'https://farm4.staticflickr.com/3734/8997118643_6c1132c603_h.jpg'},
-                                                {url: 'https://farm6.staticflickr.com/5454/8998769755_5ecf7b55fb_h.jpg'}, 
-                                                {url: 'https://farm4.staticflickr.com/3743/9060998433_fe3cbdde6b_h.jpg'},
-                                                {url:'https://farm6.staticflickr.com/5346/9237038568_f3fff6540f_h.jpg'},
-                                                {url:'https://farm8.staticflickr.com/7434/9234210773_d2ecfd84c1_h.jpg'}
+                                                {url: 'https://farm4.staticflickr.com/3734/8997118643_6c1132c603_h.jpg',copyright:{name: 'You can set the image/video copyright'}},
+                                                {url: 'https://farm6.staticflickr.com/5454/8998769755_5ecf7b55fb_h.jpg',copyright:{name: 'With or without link', link: 'http://www.big-d-web.com'}}, 
+                                                {url:'https://farm8.staticflickr.com/7434/9234210773_d2ecfd84c1_h.jpg',copyright:{name: 'With mail, phone or GPS!', link: 'mailto:digitald@big-d-web.com'}},
+                                                {url: 'https://farm4.staticflickr.com/3743/9060998433_fe3cbdde6b_h.jpg',copyright:{name: 'Big-D Web Solutions', link: 'https://www.flickr.com/photos/97202827@N07/'}},
+                                                {url:'https://farm6.staticflickr.com/5346/9237038568_f3fff6540f_h.jpg',copyright:{name: 'Big-D Web Solutions', link: 'https://www.flickr.com/photos/97202827@N07/'}}
+                                                
                         ],
                                         time: 6000,
                                         animation: 'slideDown',
@@ -54,6 +55,7 @@
                                         buttons: true,
                                         autoplay: true,
                                         preload: true,
+                                        bindKeys: true,
                                         countdown: {active: true, style: {start: '_0', end: '_100'}}
                                 });
                         });
