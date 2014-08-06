@@ -41,7 +41,7 @@ html,body{height:100%; width:100%;margin:0;padding:0;}
         overflow: hidden;
         position: relative;
         margin:5px;
-        z-index: 2;
+        z-index: 5;
 }
 
 #gallery3{

@@ -1,8 +1,12 @@
 /* FullGallery v1.3
  * 
- * Responsive multi-Gallery with thumbinals, customizable transiction and content slideshow
+ * Responsive multi-Gallery with thumbinals, customizable transiction and content slideshow and background video/image slideshow
  * 
  * Changelog
+ * v1.4 (06/08/2014)
+ * + Added swipe support with Hammer.js(http://hammerjs.github.io/)
+ * + Tab change wrong video action fix
+ * 
  * v1.3 (05/08/2014)
  * + Added keydown support (up/left, down/right and p) to move back, forward and stop the image slider
  * + Added image/video copyright message
@@ -83,6 +87,7 @@
                         resumePlay: true,
                         preload: true,
                         bindKeys: false,
+                        bindTouch: false,
                         volumeFadeSpeed: 30,
                         countdown: {active: false,
                                 style: {
@@ -127,7 +132,7 @@
         window.FG_video_data = {};
         window.FG_video_loaded = false;
         $.getScript('//www.youtube.com/iframe_api');
-        var scriptData = {name: 'FullGallery', version: '1.3', lastUpdate: '2014-08-05', authors: [{name: 'digitaldag', contacts: 'mailto:digitald@big-d-web.com'}], url: 'https://github.com/digitaldag/FullGallery'};
+        var scriptData = {name: 'FullGallery', version: '1.4', lastUpdate: '2014-08-06', authors: [{name: 'digitaldag', contacts: 'mailto:digitald@big-d-web.com'}], url: 'https://github.com/digitaldag/FullGallery'};
 
         //Animation samples
         var animations = {
@@ -333,6 +338,7 @@
                 //Bind left/right && up/down key down event to gallery change
                 enVars.keyDown = {};
                 $(document).keydown(function(e) {
+                        var _42 = _42 || '';
                         enVars.keyDown[e.key] = true;
                         if (options[id].bindKeys != false) {
                                 if (e.key == 'Up' || e.key == 'Left') {
@@ -366,11 +372,53 @@
                                 log(s.name + ' (' + s.version + ') made with love by ' + authors, id);
 
                         }
+                        if (enVars.keyDown['4'] && enVars.keyDown['2']) {
+                                console.log('You found the Answer to the Ultimate Question of Life, the Universe, and Everything!');
+                        }
                         if (enVars.keyDown['Esc']) {
                                 $('.sc').fadeOut();
                         }
                         log('Key pressed: ' + e.key, id);
                 });
+
+                if (options[id].bindTouch != false && typeof Hammer == 'function') {
+                        var mc = new Hammer(document.getElementById($(options[id].base).attr('id')));
+                        mc.add(new Hammer.Tap({event: 'doubletap', taps: 2}));
+                        mc.add(new Hammer.Tap({event: 'sc', taps: 4}));
+                        mc.add(new Hammer.Tap({event: 'answer', taps: 42}));
+                        mc.on('swipeleft swipeup panleft pantop', function() {
+                                $(options[id].base).FullGallery('prev');
+                        }).on('swiperight swipedown panright pandown', function() {
+                                $(options[id].base).FullGallery('next');
+                        }).on('doubletap', function() {
+                                log('2taps');
+                                if (options[id].status == 1) {
+                                        $(options[id].base).FullGallery('stop');
+                                }
+                                else if (options[id].status == 0) {
+                                        $(options[id].base).FullGallery('play');
+                                }
+                        }).on('sc', function() {
+                                log('4taps');
+                                s = scriptData;
+                                authors = '';
+                                for (i = 0; i < s.authors.length; i++) {
+                                        authors += '<a href="' + s.authors[i].contacts + '">' + s.authors[i].name + '</a>';
+                                        if (s.authors.length != i - 1) {
+                                                authors += ', ';
+                                        }
+                                }
+                                $('.sc').html('<p><a href="' + s.url + '">' + s.name + '</a> (' + s.version + ') made with love by ' + authors + '</p>').fadeIn();
+                                setTimeout(function() {
+                                        $('.sc').fadeOut()
+                                }, 5000);
+                                log(s.name + ' (' + s.version + ') made with love by ' + authors, id);
+                        }).on('answer', function() {
+                                log('42taps');
+                                console.log('You found the Answer to the Ultimate Question of Life, the Universe, and Everything!');
+                        });
+                }
+
                 $(document).keyup(function(e) {
                         enVars.keyDown[e.key] = false;
                 });
@@ -676,25 +724,27 @@
 
 //Play the autoslide
         var play = function(id) {
-                options[id].status = 1;
-                if (typeof options[id].callback.play == 'function')
-                {
-                        options[id].callback.play();
-                }
+                if (options[id].status != 1) {
+                        options[id].status = 1;
+                        if (typeof options[id].callback.play == 'function')
+                        {
+                                options[id].callback.play();
+                        }
 
-                if (options[id].images[options[id].actual].type == 'youtube')
-                {
-                        if (FG_video_data[id + '_video_' + options[id].actual].status == 0)
+                        if (options[id].images[options[id].actual].type == 'youtube')
+                        {
+                                if (FG_video_data[id + '_video_' + options[id].actual].status == 0)
+                                {
+                                        animation(id, options[id].animation, 'n');
+                                }
+                        }
+                        else
                         {
                                 animation(id, options[id].animation, 'n');
                         }
+                        log('Play', id);
                 }
-                else
-                {
-                        animation(id, options[id].animation, 'n');
-                }
-                log('Play', id);
-        }
+        };
 
 //Go to the next slide
         var next = function(id) {
@@ -987,12 +1037,15 @@
                                 }
                         }
 
-                        if (document[enVars.visibilityValue] && options[id].images[options[id].actual].stopOnTabBlur) {
+                        if (document[enVars.visibilityValue] && options[id].images[options[id].actual].stopOnTabBlur && options[id].images[options[id].actual].status == 1) {
                                 $(options[id].base).FullGalleryVideoManager('pause');
+                                options[id].images[options[id].actual].status = 3;
                         }
-                        if(!document[enVars.visibilityValue] && options[id].images[options[id].actual].resumeOnTabFocus){
+
+                        if (!document[enVars.visibilityValue] && options[id].images[options[id].actual].resumeOnTabFocus && options[id].images[options[id].actual].status == 3) {
                                 $(options[id].base).FullGalleryVideoManager('play');
                         }
+
                 }
         }
 
@@ -1170,30 +1223,36 @@
                                 if (options[id].images[options[id].actual].type == 'youtube')
                                 {
                                         FG_video[id + '_video_' + options[id].actual].playVideo();
+                                        options.images[$(e.target.a).attr('image')].status = 1;
                                 }
                                 else
                                 {
                                         document.getElementById(id + '_video_' + options[id].actual).play();
+                                        options.images[$(e.target.a).attr('image')].status = 1;
                                 }
                                 break;
                         case 'stop':
                                 if (options[id].images[options[id].actual].type == 'youtube')
                                 {
                                         FG_video[id + '_video_' + options[id].actual].stopVideo();
+                                        options.images[$(e.target.a).attr('image')].status = 0;
                                 }
                                 else
                                 {
                                         document.getElementById(id + '_video_' + options[id].actual).pause();
+                                        options.images[$(e.target.a).attr('image')].status = 0;
                                 }
                                 break;
                         case 'pause':
                                 if (options[id].images[options[id].actual].type == 'youtube')
                                 {
                                         FG_video[id + '_video_' + options[id].actual].pauseVideo();
+                                        options.images[$(e.target.a).attr('image')].status = 2;
                                 }
                                 else
                                 {
                                         document.getElementById(id + '_video_' + options[id].actual).pause();
+                                        options.images[$(e.target.a).attr('image')].status = 2;
                                 }
                                 break;
                         case 'restart':
@@ -1324,6 +1383,7 @@ window.onYouTubeIframeAPIReady = function(write, id, i) {
                                                 if (e.data == YT.PlayerState.ENDED && loop == 1)
                                                 {
                                                         e.target.playVideo();
+                                                        options.images[$(e.target.a).attr('image')].status = 1;
                                                 }
                                                 else if (e.data == YT.PlayerState.ENDED && loop == 0 && options.status == 1)
                                                 {

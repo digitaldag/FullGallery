@@ -1,5 +1,6 @@
 <html>
         <head>
+                <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
                 <title>FullGallery</title>
                 <link href="../css/style.css" media="all" rel="stylesheet" type="text/css" />
                 <link href="../css/FullGallery.js.css" media="all" rel="stylesheet" type="text/css" />
@@ -19,6 +20,7 @@
                 <script src="../js/libs/jquery/jquery.min.js" ></script>
                 <script src="../js/libs/jqueryui/jquery-ui.js"></script>
                 <script src="../js/libs/jquery-easing/jquery.easing.min.js" ></script>
+                <script src="../js/libs/hammer.js/hammer.js" ></script>
                 <script src="../js/libs/fullgallery/FullGallery.js" ></script>
                 <script src="../js/libs/fullgallery/FullGallery.animations.js" ></script>
 
@@ -27,8 +29,8 @@
 
                                 $('#gallery').FullGallery({
                                         images: [
-                                                {url: '6v2L2UGZJAM', type: 'youtube', muted: true, annotations: false, loop: false, customControls: '#backgroundVideoControls', controls: false, autoplay: true, info: false, height: 315, width: 560, adaptTime: true,stopOnTabBlur:true,resumeOnTabFocus:true},
                                                 {url: 'https://farm4.staticflickr.com/3734/8997118643_6c1132c603_h.jpg'},
+                                                {url: '6v2L2UGZJAM', type: 'youtube', muted: true, annotations: false, loop: false, customControls: '#backgroundVideoControls', controls: false, autoplay: true, info: false, height: 315, width: 560, adaptTime: true,stopOnTabBlur:true,resumeOnTabFocus:true},
                                                 {url: 'https://farm6.staticflickr.com/5454/8998769755_5ecf7b55fb_h.jpg'},
                                                 {url: 'P5_GlAOCHyE', type: 'youtube', annotations: false, loop: false, controls: false, autoplay: true, info: false, height: 315, width: 560, adaptTime: true},
                                                 {url: 'https://farm4.staticflickr.com/3743/9060998433_fe3cbdde6b_h.jpg'}
@@ -56,6 +58,7 @@
                                         autoplay: true,
                                         preload: true,
                                         bindKeys: true,
+                                        bindTouch: true,
                                         countdown: {active: true, style: {start: '_0', end: '_100'}}
                                 });
                         });
