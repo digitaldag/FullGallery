@@ -1,8 +1,12 @@
-/* FullGallery v1.3
+/* FullGallery v1.5
  * 
  * Responsive multi-Gallery with thumbinals, customizable transiction and content slideshow and background video/image slideshow
  * 
  * Changelog
+ * v1.5 (01/09/2014)
+ * + Added "destroy" function
+ * + FIX, autoplay if preload disabled
+ * 
  * v1.4 (06/08/2014)
  * + Added swipe support with Hammer.js(http://hammerjs.github.io/)
  * + Tab change wrong video action fix
@@ -132,8 +136,7 @@
         window.FG_video_data = {};
         window.FG_video_loaded = false;
         $.getScript('//www.youtube.com/iframe_api');
-        var scriptData = {name: 'FullGallery', version: '1.4', lastUpdate: '2014-08-06', authors: [{name: 'digitaldag', contacts: 'mailto:digitald@big-d-web.com'}], url: 'https://github.com/digitaldag/FullGallery'};
-
+        var scriptData = {name: 'FullGallery', version: '1.5', lastUpdate: '2014-09-01', authors: [{name: 'digitaldag', contacts: 'mailto:digitald@big-d-web.com'}], url: 'https://github.com/digitaldag/FullGallery'};
         //Animation samples
         var animations = {
                 fade: {
@@ -248,6 +251,9 @@
                                         case 'resize':
                                                 callback = resize;
                                                 break;
+                                        case 'destroy':
+                                                callback = destroy;
+                                                break;
                                 }
                         }
                         else if (argL == 1 && typeof arguments[0] == 'number')
@@ -334,7 +340,6 @@
                         });
                 }
                 $(options[id].base).empty();
-
                 //Bind left/right && up/down key down event to gallery change
                 enVars.keyDown = {};
                 $(document).keydown(function(e) {
@@ -370,7 +375,6 @@
                                 }
                                 $('.sc').html('<p><a href="' + s.url + '">' + s.name + '</a> (' + s.version + ') made with love by ' + authors + '</p>').fadeIn();
                                 log(s.name + ' (' + s.version + ') made with love by ' + authors, id);
-
                         }
                         if (enVars.keyDown['4'] && enVars.keyDown['2']) {
                                 console.log('You found the Answer to the Ultimate Question of Life, the Universe, and Everything!');
@@ -380,7 +384,6 @@
                         }
                         log('Key pressed: ' + e.key, id);
                 });
-
                 if (options[id].bindTouch != false && typeof Hammer == 'function') {
                         var mc = new Hammer(document.getElementById($(options[id].base).attr('id')));
                         mc.add(new Hammer.Tap({event: 'doubletap', taps: 2}));
@@ -422,7 +425,6 @@
                 $(document).keyup(function(e) {
                         enVars.keyDown[e.key] = false;
                 });
-
                 //Check what kind of mini-gallery is setted
                 switch (options[id].mini)
                 {
@@ -466,7 +468,6 @@
                         options[id].images[i].copyright = options[id].images[i].copyright || {link: '', name: ''};
                         copyright = '&copy; ' + ((options[id].images[i].copyright.link != '' && options[id].images[i].copyright.link != undefined) ? '<a target="_blank" href=\"' + options[id].images[i].copyright.link + '\" title="' + options[id].images[i].copyright.name + '">' : '') + options[id].images[i].copyright.name + ((options[id].images[i].copyright.link != '' && options[id].images[i].copyright.link != undefined) ? '</a>' : '');
                         copyright_show = (options[id].images[i].copyright.link != '' || options[id].images[i].copyright.name != '') ? 'block' : 'none';
-
                         if (options[id].images[i].type == 'video')
                         {
                                 loop = (options[id].images[i].loop) ? 'loop' : '';
@@ -487,10 +488,8 @@
                                         }
                                 }
                                 video += '</video>';
-
                                 customControls = '<div style="display:' + d + ';" class="FG_video_controls"><ul><li class="play"></li><li class="stop"></li><li class="restart"></li><li class="fadein"></li><li class="fadeout"></li><li class="mute"></li><li class="unmute"></li></ul></div>';
                                 $(options[id].base).append('<div video="true" class="FG_image" image="' + i + '" style="z-index:' + z + ';display:' + d + ';">' + video + ((options[id].images[i].content == undefined) ? '' : options[id].images[i].content) + ((options[id].images[i].customControls == true) ? customControls : '') + '<div class="sc" style="display:none;position:absolute;top:5px;right:0;font-size:9px;background:#fff;color;#000;"></div><div class="copyright" style="display:' + copyright_show + ';">' + copyright + '</div></div>');
-
                                 if (i == 0) {
                                         document.getElementById(id + '_video_' + i).onended = function() {
                                                 if (options[id].status == 1) {
@@ -499,11 +498,9 @@
                                         }
                                 }
                                 document.getElementById(id + '_video_' + i).pause();
-
                                 if (options[id].images[i].customControls != undefined && options[id].images[i].customControls != true && options[id].images[i].customControls != false)
                                 {
                                         $(options[id].images[i].customControls).append(customControls);
-
                                         $(options[id].images[i].customControls).children('.FG_video_controls').children('ul').children('li').click(function() {
                                                 $(options[id].base).FullGalleryVideoManager($(this).attr('class'));
                                         });
@@ -549,14 +546,11 @@
                                 }
 
                                 video = '<div videoID="' + url + '" class="FG_video" id="' + id + '_video_' + i + '" image="' + i + '" base="' + id + '" h="' + options[id].images[i].height + '" w="' + options[id].images[i].width + '" allowfullscreen></div>';
-
                                 customControls = '<div style="display:' + d + ';" class="FG_video_controls"><ul><li class="play"></li><li class="pause"></li><li class="stop"></li><li class="restart"></li><li class="fadein"></li><li class="fadeout"></li><li class="mute"></li><li class="unmute"></li></ul></div>';
                                 $(options[id].base).append('<div class="FG_image" video="true" image="' + i + '" style="z-index:' + z + ';display:' + d + ';">' + video + ((options[id].images[i].content == undefined) ? '' : options[id].images[i].content) + ((options[id].images[i].customControls == true) ? customControls : '') + '<div class="sc" style="display:none;position:absolute;top:5px;right:0;font-size:9px;background:#fff;color;#000;"></div><div class="copyright" style="display:' + copyright_show + ';">' + copyright + '</div></div>');
-
                                 if (options[id].images[i].customControls != undefined && options[id].images[i].customControls != true && options[id].images[i].customControls != false)
                                 {
                                         $(options[id].images[i].customControls).append(customControls);
-
                                         $(options[id].images[i].customControls).children('.FG_video_controls').children('ul').children('li').click(function() {
                                                 $(options[id].base).FullGalleryVideoManager($(this).attr('class'));
                                         });
@@ -581,7 +575,6 @@
                                         });
                                 }
                                 options[id].totalImages++;
-
                                 $(options[id].base).append('<div class="FG_image" image="' + i + '" style="z-index:' + z + ';background-image:url(' + options[id].images[i].url + ');display:' + d + ';">' + ((options[id].images[i].content == undefined) ? '' : options[id].images[i].content) + '<div class="sc" style="display:none;position:absolute;top:5px;right:0;font-size:9px;background:#fff;color;#000;"></div><div class="copyright" style="display:' + copyright_show + ';">' + copyright + '</div></div>');
                         }
 
@@ -672,7 +665,6 @@
                 $(window).resize(function() {
                         $(options[id].base).FullGallery('resize');
                 });
-
                 //If autoplay set true
                 if (options[id].autoplay) {
                         log('Autoplay', id);
@@ -692,13 +684,13 @@
                                 }
                                 else
                                 {
-                                        if (options[id].total > 1)
-                                        {
+                                        if (options[id].total > 1) {
                                                 cDown(id, true, time);
+                                                to[id] = setTimeout(function() {
+                                                        play(id);
+                                                        next(id);
+                                                }, time);
                                         }
-                                        to[id] = setTimeout(function() {
-                                                play(id);
-                                        }, time);
                                 }
                         }
 
@@ -724,28 +716,29 @@
 
 //Play the autoslide
         var play = function(id) {
-                if (options[id].status != 1) {
-                        options[id].status = 1;
-                        if (typeof options[id].callback.play == 'function')
-                        {
-                                options[id].callback.play();
-                        }
+                if (options[id] != undefined) {
+                        if (options[id].status != 1) {
+                                options[id].status = 1;
+                                if (typeof options[id].callback.play == 'function')
+                                {
+                                        options[id].callback.play();
+                                }
 
-                        if (options[id].images[options[id].actual].type == 'youtube')
-                        {
-                                if (FG_video_data[id + '_video_' + options[id].actual].status == 0)
+                                if (options[id].images[options[id].actual].type == 'youtube')
+                                {
+                                        if (FG_video_data[id + '_video_' + options[id].actual].status == 0)
+                                        {
+                                                animation(id, options[id].animation, 'n');
+                                        }
+                                }
+                                else
                                 {
                                         animation(id, options[id].animation, 'n');
                                 }
+                                log('Play', id);
                         }
-                        else
-                        {
-                                animation(id, options[id].animation, 'n');
-                        }
-                        log('Play', id);
                 }
         };
-
 //Go to the next slide
         var next = function(id) {
                 if (!$(_baseId[id] + ' > .FG_image').is(':animated'))
@@ -1014,38 +1007,59 @@
                 }
         }
 
+//Destroy function
+        var destroy = function(id) {
+                if (options[id] != undefined) {
+                        stop(id);
+                        clearTimeout(to[id]);
+                        $(options[id].base).empty();
+                        options_2 = [];
+                        for (key in options) {
+                                if (key != id) {
+                                        options_2[key] = options[key];
+                                }
+                                else {
+                                        log('Removed ' + key, id);
+                                }
+                        }
+                        options = options_2;
+                }
+        };
+
 //Tab change function calback
         var visibilityChange = function(id) {
-                if (options[id].status != null)
-                {
-                        if (document[enVars.visibilityValue] && options[id].status == 1)
+                if (options[id] != undefined) {
+                        if (options[id].status != null)
                         {
-                                log('Visibility change HIDE', id);
-                                $(options[id].base).FullGallery('stop');
-                                if (typeof options[id].callback.tabBlur == 'function')
+                                if (document[enVars.visibilityValue] && options[id].status == 1)
                                 {
-                                        options[id].callback.tabBlur();
+                                        log('Visibility change HIDE', id);
+                                        $(options[id].base).FullGallery('stop');
+                                        if (typeof options[id].callback.tabBlur == 'function')
+                                        {
+                                                options[id].callback.tabBlur();
+                                        }
                                 }
-                        }
-                        else if (options[id].status == 0 && options[id].resumePlay == true)
-                        {
-                                log('Visibility change SHOW', id);
-                                $(options[id].base).FullGallery('play');
-                                if (typeof options[id].callback.tabFocus == 'function')
+                                else if (options[id].status == 0 && options[id].resumePlay == true)
                                 {
-                                        options[id].callback.tabFocus();
+                                        log('Visibility change SHOW', id);
+                                        $(options[id].base).FullGallery('play');
+                                        if (typeof options[id].callback.tabFocus == 'function')
+                                        {
+                                                options[id].callback.tabFocus();
+                                        }
                                 }
-                        }
 
-                        if (document[enVars.visibilityValue] && options[id].images[options[id].actual].stopOnTabBlur && options[id].images[options[id].actual].status == 1) {
-                                $(options[id].base).FullGalleryVideoManager('pause');
-                                options[id].images[options[id].actual].status = 3;
-                        }
+                                if (document[enVars.visibilityValue] && options[id].images[options[id].actual].stopOnTabBlur && options[id].images[options[id].actual].status == 1) {
+                                        $(options[id].base).FullGalleryVideoManager('pause');
+                                        options[id].images[options[id].actual].status = 3;
+                                }
 
-                        if (!document[enVars.visibilityValue] && options[id].images[options[id].actual].resumeOnTabFocus && options[id].images[options[id].actual].status == 3) {
-                                $(options[id].base).FullGalleryVideoManager('play');
-                        }
+                                if (!document[enVars.visibilityValue] && options[id].images[options[id].actual].resumeOnTabFocus && options[id].images[options[id].actual].status == 3) {
+                                        $(options[id].base).FullGalleryVideoManager('play');
+                                }
 
+                        }
                 }
         }
 
@@ -1216,7 +1230,6 @@
         $.fn.FullGalleryVideoManager = function(action, i)
         {
                 var id = $(this).attr('id');
-
                 switch (action)
                 {
                         case 'play':
@@ -1336,16 +1349,15 @@
                 }
         }
 
-})(jQuery);
+}
+)(jQuery);
 //Manage youtube.ready function
 window.onYouTubeIframeAPIReady = function(write, id, i) {
 
         if (write === true || FG_video_loaded == false)
         {
                 id_v = (id != '' && id != undefined) ? '#' + id + ' .div[videoID][image="' + i + '"],#' + id + ' .iframe[videoID][image="' + i + '"]' : 'div[videoID],iframe[videoID]';
-
                 $(id_v).each(function() {
-                        console.log('Div/Iframe');
                         html = $(this).parent('div').html();
                         html = html.replace('iframe', 'div');
                         $(this).parent('div').html(html);
@@ -1356,7 +1368,6 @@ window.onYouTubeIframeAPIReady = function(write, id, i) {
                         w = $(this).attr('w');
                         loop = FG_video_data[id + '_video_' + i].loop;
                         muted = FG_video_data[id + '_video_' + i].muted;
-                        console.log('Mut: ' + muted);
                         opt = FG_video_data[id + '_video_' + i];
                         FG_video[id + '_video_' + i] = new YT.Player(id + '_video_' + i, {
                                 width: w,
@@ -1369,7 +1380,6 @@ window.onYouTubeIframeAPIReady = function(write, id, i) {
                                                 $('#' + id).FullGallery('resize');
                                                 FG_video_data[id + '_video_' + i].duration = e.target.getDuration();
                                                 FG_video_data[id + '_video_' + i].status = 0;
-                                                console.log('Mut: ' + muted);
                                                 if (muted)
                                                 {
                                                         e.target.mute();
@@ -1379,7 +1389,6 @@ window.onYouTubeIframeAPIReady = function(write, id, i) {
                                                 var options = $('#' + id).FullGalleryGetOptions();
                                                 FG_video_data[id + '_video_' + i].status = e.data;
                                                 loop = options.images[$(e.target.a).attr('image')].loop;
-
                                                 if (e.data == YT.PlayerState.ENDED && loop == 1)
                                                 {
                                                         e.target.playVideo();
