@@ -475,16 +475,16 @@
                                 autoplay = (options[id].images[i].autoplay) ? 'autoplay' : '';
                                 video = '<video class="FG_video" id="' + id + '_video_' + i + '" image="' + i + '" base="' + id + '" ' + autoplay + ' ' + loop + ' ' + controls + '>';
                                 sources = options[id].images[i].url.split(';');
-                                for (i = 0; i < sources.length; i++)
+                                for (u = 0; u < sources.length; u++)
                                 {
-                                        source = sources[i].split('|');
+                                        source = sources[u].split('|');
                                         if (source.length == 2)
                                         {
                                                 video += '<source src="' + source[0] + '" type="' + source[1] + '">';
                                         }
                                         else
                                         {
-                                                video += '<source src="' + sources[i] + '">';
+                                                video += '<source src="' + sources[u] + '">';
                                         }
                                 }
                                 video += '</video>';
